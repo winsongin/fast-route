@@ -70,10 +70,11 @@ def new_inventory():
 
         parameters = request.get_json(force=True)
 
+        date = parameters['date']
         product = parameters['product']
         barcode = parameters['barcode']
-        location = parameters['location']
-        date = parameters['date']
+        location = salesfloor
+        aisle = parameters['aisle']
 
         message = {'product': product, 'barcode': barcode, 'location': location}
         return jsonify(message), 201 # 201 OK status code for resource successfully created
@@ -84,10 +85,14 @@ def backstock_product():
 
     parameters = request.get_json(force=True) 
     
+    date = parameters['date']
     product = parameters['product'] 
     barcode = parameters['barcode']
-    date = parameters['date']
-    
+    location = "backstock"
+    aisle = parameters['aisle']
+
+    message = {'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle}
+    return jsonify(message), 201 # 201 OK status code for resource successfully created
     
 @app.route('/api/v1.0/inventory/pull', methods=['PUT'])
 def pull_product(): 
