@@ -11,34 +11,39 @@ app = Flask(__name__)
 config = ConfigParser()
 config.read('database.ini')
 
+# Taken from .ini configuration file
 HOST = config['mysql']['host']
 USER = config['mysql']['user']
 PASSWORD = config['mysql']['password']
 
-myDB = mysql.connector.connect(
-    HOST, 
-    USER,
-    PASSWORD
+myDB = mysql.connector.connect( 
+    host = HOST, \
+    user = USER, \
+    password = PASSWORD, \
 )
 
 databaseCursor = myDB.cursor() 
 
+# Configure database and tables
 databaseCursor.execute('CREATE DATABASE IF NOT EXISTS FastRoute')
-databaseCursor.execute('CREATE TABLE IF NOT EXISTS inventory (
-    date DATE PRIMARY KEY NOT NULL,
-    product VARCHAR(255) NOT NULL, 
-    barcode INT NOT NULL,
-    location VARCHAR(255) NOT NULL,
-    aisle VARCHAR(255) NOT NULL
+databaseCursor.execute('USE FastRoute')
+# inventory table will account for salesfloor and backstock
+databaseCursor.execute('CREATE TABLE IF NOT EXISTS inventory ( \
+    date DATE PRIMARY KEY NOT NULL, \
+    product VARCHAR(255) NOT NULL, \
+    barcode INT NOT NULL, \
+    location VARCHAR(255) NOT NULL, \
+    aisle VARCHAR(255) NOT NULL \
 )')
-databaseCursor.execute('CREATE TABLE IF NOT EXISTS onlineOrders (
-    batch INT PRIMARY KEY NOT NULL, 
-    date DATE NOT NULL,
-    product VARCHAR(255) NOT NULL, 
-    barcode INT NOT NULL, 
-    location VARCHAR(255) NOT NULL, 
-    aisle VARCHAR(255) NOT NULL
-    purpose VARCHAR(255) NOT NULL
+# onlineOrders table will account for Ship-From-Store (SFS) and Order Pick-Ups (OPUs)
+databaseCursor.execute('CREATE TABLE IF NOT EXISTS onlineOrders ( \
+    batch INT PRIMARY KEY NOT NULL, \
+    date DATE NOT NULL,\
+    product VARCHAR(255) NOT NULL, \
+    barcode INT NOT NULL, \
+    location VARCHAR(255) NOT NULL, \
+    aisle VARCHAR(255) NOT NULL, \
+    purpose VARCHAR(255) NOT NULL \
 )')
 
 # Handle 404 Not Found
@@ -52,9 +57,17 @@ def home():
 
 @app.route('/api/v1.0/inventory/salesfloor', methods=['GET','POST'])
 def new_inventory(): 
+    if request.method == 'GET':
+        
+        product = request.args.get('product')
+        barcode = request.args.get('barcode')
+
+        message = {'product': product, 'barcode': barcode}
+        return jsonify(message), 200 # 200 OK status code for successful GET request
 
     # Handle new barcodes/products
-    if request.methods == 'POST': 
+    elif request.method == 'POST':
+
         parameters = request.get_json(force=True)
 
         product = parameters['product']
@@ -100,7 +113,7 @@ def picks_for_OPUs():
     purpose = "OPUs"
 
 # Pick items for SFS (Ship From Store) batches
-@app.route('api/v1.0/SFS')
+@app.route('/api/v1.0/SFS')
 def picks_for_SFS():
 
     parameters = request.get_json(force=True)
