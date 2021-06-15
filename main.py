@@ -26,7 +26,9 @@ databaseCursor = myDB.cursor()
 
 # Configure database and tables
 databaseCursor.execute('CREATE DATABASE IF NOT EXISTS FastRoute')
+databaseCursor.commit()
 databaseCursor.execute('USE FastRoute')
+databaseCursor.commit()
 # inventory table will account for salesfloor and backstock
 databaseCursor.execute('CREATE TABLE IF NOT EXISTS inventory ( \
     date DATE PRIMARY KEY NOT NULL, \
@@ -35,6 +37,7 @@ databaseCursor.execute('CREATE TABLE IF NOT EXISTS inventory ( \
     location VARCHAR(255) NOT NULL, \
     aisle VARCHAR(255) NOT NULL \
 )')
+databaseCursor.commit()
 # onlineOrders table will account for Ship-From-Store (SFS) and Order Pick-Ups (OPUs)
 databaseCursor.execute('CREATE TABLE IF NOT EXISTS onlineOrders ( \
     batch INT PRIMARY KEY NOT NULL, \
@@ -45,6 +48,7 @@ databaseCursor.execute('CREATE TABLE IF NOT EXISTS onlineOrders ( \
     aisle VARCHAR(255) NOT NULL, \
     purpose VARCHAR(255) NOT NULL \
 )')
+databaseCursor.commit()
 
 # Handle 404 Not Found
 @app.errorhandler(404)
@@ -76,8 +80,13 @@ def new_inventory():
         location = salesfloor
         aisle = parameters['aisle']
 
-        message = {'product': product, 'barcode': barcode, 'location': location}
+        message = {'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle}
         return jsonify(message), 201 # 201 OK status code for resource successfully created
+
+        query = "INSERT into inventory (date, product, barcode, location, aisle) VALUES (%s, %s, %s, %s, %s)"
+        values = (date, product, barcode, location, aisle)
+        databaseCursor.execute(query, values)
+        databaseCursor.commit()
 
 # Products can be backstocked if the location on the salesfloor is full
 @app.route('/api/v1.0/inventory/backstock', methods=['POST'])
@@ -93,43 +102,75 @@ def backstock_product():
 
     message = {'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle}
     return jsonify(message), 201 # 201 OK status code for resource successfully created
+
+    query = "INSERT into inventory (date, product, barcode, location, aisle) VALUES (%s, %s, %s, %s, %s)"
+    values = (date, product, barcode, location, aisle) 
+    databaseCursor.execute(query, values)
+    databaseCursor.commit() 
     
-@app.route('/api/v1.0/inventory/pull', methods=['PUT'])
+# Pull inventory from backstock
+@app.route('/api/v1.0/inventory/backstock/pull', methods=['PUT'])
 def pull_product(): 
 
-    parameters = request.get_json(force=True) 
+    date = request.args.get('date')
+    product = request.args.get('product') 
+    barcode = request.args.get('barcode')
+    location = "salesfloor" # Update location from backstock to salesfloor when the item is pulled from backstock
+    aisle = request.args.get('aisle')
 
-    product = parameters['product']
-    barcode = parameters['barcode']
-    location = parameters['location']
-    date = parameters['date']
+    message = {'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle}
+    return jsonify(message), 200
+
+    query = "UPDATE into inventory (date, product, barcode, location, aisle) VALUES (%s, %s, %s, %s, %s)"
+    values = (date, product, barcode, location, aisle)
+    databaseCursor.execute(query, values) 
+    databaseCursor.commit() 
 
 # OPUs - Order Pick-Ups
-@app.route('/api/v1.0/OPUs')
+@app.route('/api/v1.0/onlineOrders/OPUs', methods=['PUT'])
 def picks_for_OPUs():
 
     parameters = request.get_json(force=True)
 
-    batch = parameters['batch']
-    product = parameters['product']
-    barcode = parameters['barcode']
-    location = parameters['location']
-    date = parameters['date'] 
-    purpose = "OPUs"
+    batch = request.args.get('batch')
+    date = request.args.get('date') 
+    product = request.args.get('product')
+    barcode = request.args.get('barcode')
+    location = request.args.get('location')
+    aisle = request.args.get('aisle')
+    purpose = "OPUs" 
+    status = "complete"
+
+    message = {'batch': batch, 'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle, 'purpose': purpose, 'status': status}
+    return jsonify(message), 200
+
+    query = "UPDATE into onlineOrders (batch, date, product, barcode, location, aisle, purpose, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (batch, date, product, barcode, location, aisle, purpose, status)
+    databaseCursor.execute(query, values) 
+    databaseCursor.commit()
 
 # Pick items for SFS (Ship From Store) batches
-@app.route('/api/v1.0/SFS')
+@app.route('/api/v1.0/onlineOrders/SFS', methods=['PUT'])
 def picks_for_SFS():
 
     parameters = request.get_json(force=True)
 
-    batch = parameters['batch']
-    product = parameters['product']
-    barcode = parameters['barcode']
-    location = parameters['location']
-    date = parameters['date']
-    purpose = "SFS"
+    batch = request.args.get('batch')
+    date = request.args.get('date') 
+    product = request.args.get('product')
+    barcode = request.args.get('barcode')
+    location = request.args.get('location')
+    aisle = request.args.get('aisle')
+    purpose = "OPUs" 
+    status = "complete"
 
+    message = {'batch': batch, 'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle, 'purpose': purpose, 'status': status}
+    return jsonify(message), 200
+
+    query = "UPDATE into onlineOrders (batch, date, product, barcode, location, aisle, purpose, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (batch, date, product, barcode, location, aisle, purpose, status)
+    databaseCursor.execute(query, values) 
+    databaseCursor.commit()
 
 if __name__ == '__main__':
     app.run(debug=True)
