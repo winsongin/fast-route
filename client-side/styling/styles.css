@@ -1,0 +1,36 @@
+body {
+  margin: 0;
+}
+
+.sidebar {
+  padding-top: 20px;
+  background-color: blue;
+  height: 800px;
+  width: 20%;
+}
+
+#logo-name {
+  color: white;
+  font-size: 35px;
+}
+
+hr {
+  border-color: red;
+}
+
+ul {
+  margin-top: 20px;
+}
+
+a {
+  color: red;
+  text-decoration: none;
+  font-size: 25px;
+}
+
+#log-out {
+  border-radius: 25px;
+  margin: 70px 40px;
+  padding: 5px 10px 5px 10px;
+  font-size: 20px;
+}
