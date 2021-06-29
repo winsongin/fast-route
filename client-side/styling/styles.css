@@ -2,9 +2,13 @@ body {
   margin: 0;
 }
 
+.container {
+  display: flex;
+}
+
 .sidebar {
   padding-top: 20px;
-  background-color: blue;
+  background-color: red;
   height: 800px;
   width: 20%;
 }
@@ -15,7 +19,7 @@ body {
 }
 
 hr {
-  border-color: red;
+  background-color: white;
 }
 
 ul {
@@ -23,9 +27,13 @@ ul {
 }
 
 a {
-  color: red;
+  color: white;
   text-decoration: none;
   font-size: 25px;
+}
+
+.nav-links:hover {
+  color: black;
 }
 
 #log-out {
@@ -33,4 +41,42 @@ a {
   margin: 70px 40px;
   padding: 5px 10px 5px 10px;
   font-size: 20px;
+  color: red;
+  background-color: white;
+}
+
+#log-out:hover {
+  color: black;
+}
+
+#task-info {
+  margin-left: 350px;
+  margin-top: 30px;
+}
+
+#image-display {
+  color: white;
+  background-color: gray;
+  border: 1px solid black;
+  padding: 120px;
+}
+
+#skip {
+  color: red;
+  margin-left: 150px;
+  font-size: 15px;
+  padding: 10px 20px 10px 20px;
+  border-radius: 25px;
+}
+
+.item-info {
+  background-color: white;
+}
+
+.item-info input {
+  float: right;
+}
+
+.item-info label {
+  margin-left: -40px;
 }
