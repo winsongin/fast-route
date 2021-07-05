@@ -1,68 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="styling/styles.css" />
-    <title>FastRoute</title>
-  </head>
 
-  <body>
-    <div class="container">
-      <div class="sidebar">
-        <ul>
-          <a href="#" id="logo-name">FastRoute</a>
-        </ul>
-        <hr />
-        <ul>
-          <a href="#" class="nav-links">Go-Backs</a>
-        </ul>
-        <ul>
-          <a href="#" class="nav-links">Order Pick-Ups</a>
-        </ul>
-        <ul>
-          <a href="#" class="nav-links">Ship From Store</a>
-        </ul>
-        <button id="log-out">Log Out</button>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <link rel="stylesheet" href="styling/styles.css" />
+  <title>FastRoute</title>
+</head>
 
-      <div id="go-backs">
-        <div class="image-display">Display image here</div>
-        <div class="item-info">
-          <ul>
-            <label for="date"
-              >Date: <input type="text" class="info" readonly
-            /></label>
-          </ul>
-          <ul>
-            <label for="product"
-              >Product: <input type="text" class="info" readonly
-            /></label>
-          </ul>
-          <ul>
-            <label for="barcode"
-              >Barcode: <input type="text" class="info" readonly
-            /></label>
-          </ul>
-          <ul>
-            <label for="location"
-              >Location: <input type="text" class="info" readonly />
-            </label>
-          </ul>
-          <ul>
-            <label for="aisle"
-              >Aisle: <input type="text" class="info" readonly
-            /></label>
-          </ul>
-        </div>
-        <div class="buttons">
-          <button id="skip">Skip</button>
-          <button id="scan-location">Scan Location</button>
-        </div>
-      </div>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <ul>
+        <a href="#" id="logo-name">FastRoute</a>
+      </ul>
+      <hr />
+      <ul>
+        <a href="#" id="go-backs" class="nav-links">Go-Backs</a>
+      </ul>
+      <ul>
+        <a href="#" id="order-pick-ups" class="nav-links">Order Pick-Ups</a>
+      </ul>
+      <ul>
+        <a href="#" id="ship-from-store" class="nav-links">Ship From Store</a>
+      </ul>
+      <button id="log-out">Log Out</button>
     </div>
 
-    <script src="scripts/index.js"></script>
-  </body>
+    <div id="workspace">
+      <div class="image-display">Display image here</div>
+      <div class="item-info">
+        <ul>
+          <label for="customer-name" id="customer-name">Customer Name: <input type="text" class="info"
+              readonly /></label>
+        </ul>
+        <ul>
+          <label for="order-number" id="order-number">Order #: <input type="text" class="info" readonly /></label>
+        </ul>
+        <ul>
+          <label for="date">Date: <input type="text" class="info" readonly /></label>
+        </ul>
+        <ul>
+          <label for="product">Product: <input type="text" class="info" readonly /></label>
+        </ul>
+        <ul>
+          <label for="barcode">Barcode: <input type="text" class="info" readonly /></label>
+        </ul>
+        <ul>
+          <label for="location">Location: <input type="text" class="info" readonly />
+          </label>
+        </ul>
+        <ul>
+          <label for="aisle">Aisle: <input type="text" class="info" readonly /></label>
+        </ul>
+      </div>
+      <div class="buttons">
+        <button id="skip">Skip</button>
+        <button id="scan-location">Scan Location</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="scripts/index.js"></script>
+</body>
+
 </html>
