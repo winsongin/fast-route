@@ -36,6 +36,7 @@ databaseCursor.execute('CREATE TABLE IF NOT EXISTS inventory ( \
     barcode INT NOT NULL, \
     location VARCHAR(255) NOT NULL, \
     aisle VARCHAR(255) NOT NULL \
+    quantity INT NOT NULL \
 )')
 databaseCursor.commit()
 # onlineOrders table will account for Ship-From-Store (SFS) and Order Pick-Ups (OPUs)
@@ -79,12 +80,13 @@ def new_inventory():
         barcode = parameters['barcode']
         location = salesfloor
         aisle = parameters['aisle']
+        quantity = paremeters['quantity']
 
-        message = {'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle}
+        message = {'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle, 'quantity': quantity}
         return jsonify(message), 201 # 201 OK status code for resource successfully created
 
-        query = "INSERT into inventory (date, product, barcode, location, aisle) VALUES (%s, %s, %s, %s, %s)"
-        values = (date, product, barcode, location, aisle)
+        query = "INSERT into inventory (date, product, barcode, location, aisle, quantity) VALUES (%s, %s, %s, %s, %s, %s)"
+        values = (date, product, barcode, location, aisle, quantity)
         databaseCursor.execute(query, values)
         databaseCursor.commit()
 
@@ -99,12 +101,13 @@ def backstock_product():
     barcode = parameters['barcode']
     location = "backstock"
     aisle = parameters['aisle']
+    quantity = parameters['quantity']
 
-    message = {'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle}
+    message = {'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle, 'quantity': quantity}
     return jsonify(message), 201 # 201 OK status code for resource successfully created
 
-    query = "INSERT into inventory (date, product, barcode, location, aisle) VALUES (%s, %s, %s, %s, %s)"
-    values = (date, product, barcode, location, aisle) 
+    query = "INSERT into inventory (date, product, barcode, location, aisle, quantity) VALUES (%s, %s, %s, %s, %s, %s)"
+    values = (date, product, barcode, location, aisle, quantity) 
     databaseCursor.execute(query, values)
     databaseCursor.commit() 
     
@@ -117,12 +120,13 @@ def pull_product():
     barcode = request.args.get('barcode')
     location = "salesfloor" # Update location from backstock to salesfloor when the item is pulled from backstock
     aisle = request.args.get('aisle')
+    quantity = request.args.get('quantity')
 
-    message = {'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle}
+    message = {'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle, 'quantity': quantity}
     return jsonify(message), 200
 
-    query = "UPDATE into inventory (date, product, barcode, location, aisle) VALUES (%s, %s, %s, %s, %s)"
-    values = (date, product, barcode, location, aisle)
+    query = "UPDATE into inventory (date, product, barcode, location, aisle, quantity) VALUES (%s, %s, %s, %s, %s, %s)"
+    values = (date, product, barcode, location, aisle, quantity)
     databaseCursor.execute(query, values) 
     databaseCursor.commit() 
 
