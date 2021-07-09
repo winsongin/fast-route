@@ -108,11 +108,41 @@ a {
   width: 15%;
   height: auto;
   margin-top: 60px;
+  margin-bottom: 80px;
 }
 
 img {
-  border: 1px solid black;
+  border: 1px solid#e3e3e3;
   width: 100%;
   height: 100%;
   object-fit: contain;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.product-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  line-height: 25px;
+  font-weight: bold;
+}
+
+.add-to-cart {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.add-to-cart-btn {
+  background-color: red;
+  color: white;
+  border-radius: 25px;
+  padding: 10px;
+  border: 2px solid black;
+}
+
+.add-to-cart-btn:hover {
+  background-color: white;
+  color: red;
 }
