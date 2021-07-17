@@ -146,3 +146,19 @@ img {
   background-color: white;
   color: red;
 }
+
+#replenish-btn {
+  margin-left: 400px;
+  margin-top: 200px;
+  border-radius: 60px;
+  padding: 40px;
+  font-size: 20px;
+  background-color: white;
+  color: red;
+  border: 3px solid black;
+}
+
+#replenish-btn:hover {
+  background-color: red;
+  color: white;
+}
