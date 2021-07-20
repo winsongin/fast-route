@@ -90,18 +90,23 @@ def home():
     return '<h1>Welcome to the Home page of FastRoute</h1>'
 
 # Retrieve or update inventory information regarding salesfloor
-@app.route('/api/v1.0/inventory/salesfloor', methods=['GET','POST'])
+@app.route('/api/v1.0/inventory/salesfloor', methods=['GET','PUT'])
 def new_inventory(): 
     if request.method == 'GET':
         
         product = request.args.get('product')
         barcode = request.args.get('barcode')
 
-        message = {'product': product, 'barcode': barcode}
+        # Retrieve aisle and quantity of a specific product
+        query = SELECT (aisle, quantity) FROM salesfloor WHERE product = product AND barcode = barcode
+        databaseCursor.execute(query) 
+        databaseCursor.commit()
+
+        message = {'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
         return jsonify(message), 200 # 200 OK status code for successful GET request
 
     # Handle new barcodes/products
-    elif request.method == 'POST':
+    elif request.method == 'PUT':
 
         parameters = request.get_json(force=True)
 
@@ -109,13 +114,13 @@ def new_inventory():
         product = parameters['product']
         barcode = parameters['barcode']
         aisle = parameters['aisle']
-        quantity = paremeters['quantity']
+        quantity = parameters['quantity']
 
         message = {'date': date, 'product': product, 'barcode': barcode, aisle': aisle, 'quantity': quantity}
         return jsonify(message), 201 # 201 OK status code for resource successfully created
 
-        query = "INSERT into salesfloor (date, product, barcode, aisle, quantity) VALUES (%s, %s, %s, %s, %s)"
-        values = (date, product, barcode, aisle, quantity)
+        query = "UPDATE salesfloor SET quantity = %s WHERE product = product AND barcode = barcode" 
+        values = quantity
         databaseCursor.execute(query, values)
         databaseCursor.commit()
 
