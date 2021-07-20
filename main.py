@@ -125,7 +125,7 @@ def new_inventory():
         databaseCursor.commit()
 
 # Retrieve or udpate inventory information regarding salesfloor
-@app.route('/api/v1.0/inventory/backstock', methods=['POST'])
+@app.route('/api/v1.0/inventory/backstock', methods=['PUT'])
 def backstock_product(): 
 
     parameters = request.get_json(force=True) 
@@ -139,8 +139,8 @@ def backstock_product():
     message = {'date': date, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
     return jsonify(message), 201 # 201 OK status code for resource successfully created
 
-    query = "INSERT into inventory (date, product, barcode, aisle, quantity) VALUES (%s, %s, %s, %s, %s)"
-    values = (date, product, barcode, aisle, quantity) 
+    query = "UPDATE backstock SET quantity = %s WHERE product = product AND barcode = barcode"
+    values = quantity 
     databaseCursor.execute(query, values)
     databaseCursor.commit() 
     
