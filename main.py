@@ -24,32 +24,61 @@ myDB = mysql.connector.connect(
 
 databaseCursor = myDB.cursor() 
 
+# ===================================== MySQL Table Creations =====================================================
+
 # Configure database and tables
 databaseCursor.execute('CREATE DATABASE IF NOT EXISTS FastRoute')
 databaseCursor.commit()
 databaseCursor.execute('USE FastRoute')
 databaseCursor.commit()
-# inventory table will account for salesfloor and backstock
-databaseCursor.execute('CREATE TABLE IF NOT EXISTS inventory ( \
+
+# Create database table for salesfloor inventory
+databaseCursor.execute('CREATE TABLE IF NOT EXISTS salesfloor ( \
     date DATE PRIMARY KEY NOT NULL, \
     product VARCHAR(255) NOT NULL, \
     barcode INT NOT NULL, \
-    location VARCHAR(255) NOT NULL, \
     aisle VARCHAR(255) NOT NULL \
     quantity INT NOT NULL \
 )')
 databaseCursor.commit()
-# onlineOrders table will account for Ship-From-Store (SFS) and Order Pick-Ups (OPUs)
-databaseCursor.execute('CREATE TABLE IF NOT EXISTS onlineOrders ( \
-    batch INT PRIMARY KEY NOT NULL, \
-    date DATE NOT NULL,\
+
+# Create database table for backstock inventory
+databaseCursor.execute('CREATE TABLE IF NOT EXISTS backstock ( \
+    date DATE PRIMARY KEY NOT NULL, \
     product VARCHAR(255) NOT NULL, \
     barcode INT NOT NULL, \
-    location VARCHAR(255) NOT NULL, \
-    aisle VARCHAR(255) NOT NULL, \
-    purpose VARCHAR(255) NOT NULL \
+    aisle VARCHAR(255) NOT NULL \
+    quantity INT NOT NULL \
 )')
 databaseCursor.commit()
+
+# Create database table for Ship From Store (SFS) orders
+databaseCursor.execute('CREATE TABLE IF NOT EXISTS orderPickUps ( \
+    batch INT PRIMARY KEY NOT NULL, \
+    date DATE NOT NULL,\
+    fName VARCHAR(255) NOT NULL, \
+    lName VARCHAR(255) NOT NULL, \
+    product VARCHAR(255) NOT NULL, \
+    barcode INT NOT NULL, \
+    aisle VARCHAR(255) NOT NULL, \
+    quantity INT NOT NULL \
+)')
+databaseCursor.commit()
+
+# Create database table for Order Pick Ups (OPUs) orders
+databaseCursor.execute('CREATE TABLE IF NOT EXISTS shipFromStore ( \
+    batch INT PRIMARY KEY NOT NULL, \
+    date DATE NOT NULL,\
+    fName VARCHAR(255) NOT NULL, \
+    lName VARCHAR(255) NOT NULL, \
+    product VARCHAR(255) NOT NULL, \
+    barcode INT NOT NULL, \
+    aisle VARCHAR(255) NOT NULL, \
+    quantity INT NOT NULL
+)')
+databaseCursor.commit()
+
+# ==================================== REST API Endpoints/Routes =================================================
 
 # Handle 404 Not Found
 @app.errorhandler(404)
@@ -60,6 +89,7 @@ def resource_not_found(error):
 def home():
     return '<h1>Welcome to the Home page of FastRoute</h1>'
 
+# Retrieve or update inventory information regarding salesfloor
 @app.route('/api/v1.0/inventory/salesfloor', methods=['GET','POST'])
 def new_inventory(): 
     if request.method == 'GET':
@@ -78,19 +108,18 @@ def new_inventory():
         date = parameters['date']
         product = parameters['product']
         barcode = parameters['barcode']
-        location = salesfloor
         aisle = parameters['aisle']
         quantity = paremeters['quantity']
 
-        message = {'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle, 'quantity': quantity}
+        message = {'date': date, 'product': product, 'barcode': barcode, aisle': aisle, 'quantity': quantity}
         return jsonify(message), 201 # 201 OK status code for resource successfully created
 
-        query = "INSERT into inventory (date, product, barcode, location, aisle, quantity) VALUES (%s, %s, %s, %s, %s, %s)"
-        values = (date, product, barcode, location, aisle, quantity)
+        query = "INSERT into salesfloor (date, product, barcode, aisle, quantity) VALUES (%s, %s, %s, %s, %s)"
+        values = (date, product, barcode, aisle, quantity)
         databaseCursor.execute(query, values)
         databaseCursor.commit()
 
-# Products can be backstocked if the location on the salesfloor is full
+# Retrieve or udpate inventory information regarding salesfloor
 @app.route('/api/v1.0/inventory/backstock', methods=['POST'])
 def backstock_product(): 
 
@@ -99,15 +128,14 @@ def backstock_product():
     date = parameters['date']
     product = parameters['product'] 
     barcode = parameters['barcode']
-    location = "backstock"
     aisle = parameters['aisle']
     quantity = parameters['quantity']
 
-    message = {'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle, 'quantity': quantity}
+    message = {'date': date, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
     return jsonify(message), 201 # 201 OK status code for resource successfully created
 
-    query = "INSERT into inventory (date, product, barcode, location, aisle, quantity) VALUES (%s, %s, %s, %s, %s, %s)"
-    values = (date, product, barcode, location, aisle, quantity) 
+    query = "INSERT into inventory (date, product, barcode, aisle, quantity) VALUES (%s, %s, %s, %s, %s)"
+    values = (date, product, barcode, aisle, quantity) 
     databaseCursor.execute(query, values)
     databaseCursor.commit() 
     
