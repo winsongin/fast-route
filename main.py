@@ -164,48 +164,48 @@ def pull_product():
     databaseCursor.commit() 
 
 # OPUs - Order Pick-Ups
-@app.route('/api/v1.0/onlineOrders/OPUs', methods=['PUT'])
+@app.route('/api/v1.0/OPU', methods=['POST'])
 def picks_for_OPUs():
 
     parameters = request.get_json(force=True)
 
     batch = request.args.get('batch')
     date = request.args.get('date') 
+    fName = request.args.get('fName')
+    lName = request.args.get('lName')
     product = request.args.get('product')
     barcode = request.args.get('barcode')
-    location = request.args.get('location')
     aisle = request.args.get('aisle')
-    purpose = "OPUs" 
-    status = "complete"
+    quantity = request.args.get('quantity')
 
-    message = {'batch': batch, 'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle, 'purpose': purpose, 'status': status}
+    message = {'batch': batch, 'date': date, 'fName': fName, 'lName': lName, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
     return jsonify(message), 200
 
-    query = "UPDATE into onlineOrders (batch, date, product, barcode, location, aisle, purpose, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    values = (batch, date, product, barcode, location, aisle, purpose, status)
+    query = "INSERT into orderPickUps (batch, date, fName, lName, product, barcode, aisle, quantity) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (batch, date, fName, lName, product, barcode, aisle, quantity)
     databaseCursor.execute(query, values) 
     databaseCursor.commit()
 
 # Pick items for SFS (Ship From Store) batches
-@app.route('/api/v1.0/onlineOrders/SFS', methods=['PUT'])
+@app.route('/api/v1.0/onlineOrders/SFS', methods=['POST'])
 def picks_for_SFS():
 
     parameters = request.get_json(force=True)
 
     batch = request.args.get('batch')
     date = request.args.get('date') 
+    fName = request.args.get('fName') 
+    lName = request.args.get('lName')
     product = request.args.get('product')
     barcode = request.args.get('barcode')
-    location = request.args.get('location')
     aisle = request.args.get('aisle')
-    purpose = "OPUs" 
-    status = "complete"
+    quantity = request.args.get('quantity')
 
-    message = {'batch': batch, 'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle, 'purpose': purpose, 'status': status}
+    message = {'batch': batch, 'date': date, 'fName': fName, 'lName': lName, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
     return jsonify(message), 200
 
-    query = "UPDATE into onlineOrders (batch, date, product, barcode, location, aisle, purpose, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    values = (batch, date, product, barcode, location, aisle, purpose, status)
+    query = "INSERT into onlineOrders (batch, date, product, barcode, location, aisle, purpose, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (batch, date, fName, lName, product, barcode, aisle, quantity)
     databaseCursor.execute(query, values) 
     databaseCursor.commit()
 
