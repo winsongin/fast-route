@@ -166,26 +166,6 @@ def backstock_product():
         message = {'date': date, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
         return jsonify(message), 200
 
-# Pull inventory from backstock
-@app.route('/api/v1.0/inventory/backstock/pull', methods=['PUT'])
-def pull_product(): 
-
-    date = request.args.get('date')
-    product = request.args.get('product') 
-    barcode = request.args.get('barcode')
-    location = "salesfloor" # Update location from backstock to salesfloor when the item is pulled from backstock
-    aisle = request.args.get('aisle')
-    quantity = request.args.get('quantity')
-
-
-    query = "UPDATE into inventory (date, product, barcode, location, aisle, quantity) VALUES (%s, %s, %s, %s, %s, %s)"
-    values = (date, product, barcode, location, aisle, quantity)
-    databaseCursor.execute(query, values) 
-    databaseCursor.commit() 
-
-    message = {'date': date, 'product': product, 'barcode': barcode, 'location': location, 'aisle': aisle, 'quantity': quantity}
-    return jsonify(message), 200
-
 # OPUs - Order Pick-Ups list when customers order online
 @app.route('/api/v1.0/fulfillment/OPU', methods=['POST'])
 def picks_for_OPUs():
