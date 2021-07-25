@@ -54,7 +54,6 @@ databaseCursor.commit()
 
 # Create database table for Ship From Store (SFS) orders
 databaseCursor.execute('CREATE TABLE IF NOT EXISTS orderPickUps ( \
-    batch INT PRIMARY KEY NOT NULL, \
     date DATE NOT NULL, \
     fName VARCHAR(255) NOT NULL, \
     lName VARCHAR(255) NOT NULL, \
@@ -68,7 +67,6 @@ databaseCursor.commit()
 
 # Create database table for Order Pick Ups (OPUs) orders
 databaseCursor.execute('CREATE TABLE IF NOT EXISTS shipFromStore ( \
-    batch INT PRIMARY KEY NOT NULL, \
     date DATE NOT NULL,\
     fName VARCHAR(255) NOT NULL, \
     lName VARCHAR(255) NOT NULL, \
@@ -172,7 +170,6 @@ def picks_for_OPUs():
 
     parameters = request.get_json(force=True)
 
-    batch = request.args.get('batch')
     date = request.args.get('date') 
     fName = request.args.get('fName')
     lName = request.args.get('lName')
@@ -182,13 +179,13 @@ def picks_for_OPUs():
     quantity = request.args.get('quantity')
 
 
-    query = "INSERT into orderPickUps (batch, date, fName, lName, product, barcode, aisle, quantity) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    values = (batch, date, fName, lName, product, barcode, aisle, quantity)
+    query = "INSERT into orderPickUps (date, fName, lName, product, barcode, aisle, quantity) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (date, fName, lName, product, barcode, aisle, quantity)
     databaseCursor.execute(query, values) 
     databaseCursor.commit()
 
-    message = {'batch': batch, 'date': date, 'fName': fName, 'lName': lName, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
-    return jsonify(message), 200
+    message = {'date': date, 'fName': fName, 'lName': lName, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
+    return jsonify(message), 201
 
 # Pick items for SFS (Ship From Store) batches
 @app.route('/api/v1.0/fulfillment/SFS', methods=['POST'])
@@ -196,7 +193,6 @@ def picks_for_SFS():
 
     parameters = request.get_json(force=True)
 
-    batch = request.args.get('batch')
     date = request.args.get('date') 
     fName = request.args.get('fName') 
     lName = request.args.get('lName')
@@ -206,13 +202,13 @@ def picks_for_SFS():
     quantity = request.args.get('quantity')
 
 
-    query = "INSERT into onlineOrders (batch, date, product, barcode, location, aisle, purpose, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    values = (batch, date, fName, lName, product, barcode, aisle, quantity)
+    query = "INSERT into onlineOrders (date, product, barcode, location, aisle, purpose, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (date, fName, lName, product, barcode, aisle, quantity)
     databaseCursor.execute(query, values) 
     databaseCursor.commit()
 
-    message = {'batch': batch, 'date': date, 'fName': fName, 'lName': lName, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
-    return jsonify(message), 200
+    message = {date': date, 'fName': fName, 'lName': lName, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
+    return jsonify(message), 201
 
 if __name__ == '__main__':
     app.run(debug=True)
