@@ -2,11 +2,13 @@ from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 from datetime import date
 from configparser import ConfigParser
+from flask_cors import CORS
 import mysql.connector
 
 load_dotenv() # Load environment variables from .env file
 
 app = Flask(__name__)
+CORS(app)
 
 # Reading MySQL credentials from .ini file
 config = ConfigParser()
@@ -23,7 +25,7 @@ myDB = mysql.connector.connect(
     password = PASSWORD, \
 )
 
-databaseCursor = myDB.cursor() 
+databaseCursor = myDB.cursor(buffered=True)
 
 # ===================================== MySQL Table Creations =====================================================
 
@@ -91,17 +93,21 @@ def home():
     return '<h1>Welcome to the Home page of FastRoute</h1>'
 
 # Initialize tables that are empty with default values
-@app.route('/api/v1.0/inventory/initializeDB', methods=['GET','POST'])
+@app.route('/api/v1.0/inventory/backstock/checkDB', methods=['GET'])
 def initializeDB(): 
 
     if request.method == 'GET': 
 
             # Check to see if there are existing rows in the table
-            query = "SELECT COUNT(*) FROM backstock"
+            query = "SELECT EXISTS(SELECT 1 FROM backstock)"
             if databaseCursor.execute(query) == 0: # 0 means that the table is empty
 
                 message = {'product': 'null', 'barcode': 'null', 'aisle': 'null', 'quantity': 'null'}
                 return jsonify(message), 200
+
+
+    message = {'Message': 'Table has already been initialized'}
+    return jsonify(message), 200
 
 # Retrieve or update inventory information regarding salesfloor
 @app.route('/api/v1.0/inventory/salesfloor', methods=['GET','PUT'])
