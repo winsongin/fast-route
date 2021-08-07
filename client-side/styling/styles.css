@@ -128,6 +128,14 @@ img {
   font-weight: bold;
 }
 
+.product-name {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  line-height: 25px;
+  font-weight: bold;
+}
+
 .add-to-cart {
   display: flex;
   justify-content: center;
@@ -161,4 +169,30 @@ img {
 #replenish-btn:hover {
   background-color: red;
   color: white;
+}
+
+#replenish-btn:active {
+  box-shadow: 5px 5px 10px 2px gray;
+}
+
+#top-of-page {
+  margin-top: 30px;
+  margin-left: 45px;
+}
+#back-btn {
+  border-radius: 35px;
+  color: red;
+  background-color: white;
+  padding: 20px;
+  font-size: 15px;
+  border: 2.5px solid black;
+}
+
+#back-btn:hover {
+  color: white;
+  background-color: red;
+}
+
+#back-btn:active {
+  box-shadow: 5px 5px 10px 2px gray;
 }
