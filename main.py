@@ -100,13 +100,12 @@ def initializeDB():
 
             # Check to see if there are existing rows in the table
             query = "SELECT EXISTS(SELECT 1 FROM backstock)"
-            if databaseCursor.execute(query) == 0: # 0 means that the table is empty
+            if databaseCursor.execute(query) == None: # None means that the table is null
 
-                message = {'product': 'null', 'barcode': 'null', 'aisle': 'null', 'quantity': 'null'}
+                message = {'message': 'Table has not been initialized'}
                 return jsonify(message), 200
 
-
-    message = {'Message': 'Table has already been initialized'}
+    message = {'message': 'Table has already been initialized'}
     return jsonify(message), 200
 
 # Retrieve or update inventory information regarding salesfloor
@@ -147,7 +146,7 @@ def new_inventory():
         return jsonify(message), 200
 
 # Retrieve or udpate inventory information regarding backstock
-@app.route('/api/v1.0/inventory/backstock', methods=['GET','PUT'])
+@app.route('/api/v1.0/inventory/backstock', methods=['GET','PUT','POST'])
 def backstock_product(): 
 
         # Get the quantity and aisle for a product
@@ -166,12 +165,6 @@ def backstock_product():
 
         # Update the quantity in the backstock table if the someone placed an order
         elif request.method == 'PUT':
-
-            # Check to see if there are existing rows in the table
-            # query = SELECT EXISTS(SELECT 1 FROM backstock) 
-            # if databaseCursor.execute(query) == 0: # 0 means that the table is empty
-                
-
             
             parameters = request.get_json(force=True) 
             
@@ -189,6 +182,26 @@ def backstock_product():
             
             message = {'date': date, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
             return jsonify(message), 200
+
+        # Used to initialize the database table if it is currently empty
+        elif request.method == 'POST':
+            
+            parameters = request.get_json(force=True)
+
+            date = parameters['date'] 
+            product = parameters['product']
+            barcode = parameters['barcode']
+            aisle = parameters['aisle']
+            quantity = parameters['quantity']
+
+            query = "INSERT into backstock (date, product, barcode, aisle, quantity) VALUES (%s, %s, %s, %s, %s)" 
+            values = (date, product, barcode, aisle, quantity) 
+            databaseCursor.execute(query, values) 
+            myDB.commit()
+
+            message = {'date': date, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
+
+            return jsonify(messaage), 200
 
 # OPUs - Order Pick-Ups list when customers order online
 @app.route('/api/v1.0/fulfillment/OPU', methods=['POST'])
