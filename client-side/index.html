@@ -10,70 +10,75 @@
 </head>
 
 <body>
-  <div class="container">
-    <div class="sidebar">
-      <ul>
-        <a href="#" id="logo-name">FastRoute</a>
-      </ul>
-      <hr />
-      <ul>
-        <a href="#" id="go-backs" class="nav-links">Go-Backs</a>
-      </ul>
-      <ul>
-        <a href="#" id="order-pick-ups" class="nav-links">Order Pick-Ups</a>
-      </ul>
-      <ul>
-        <a href="#" id="ship-from-store" class="nav-links">Ship From Store</a>
-      </ul>
-      <ul>
-        <a href="#" id="replenishment" class="nav-links">Replenish Inventory</a>
-      </ul>
-      <ul>
-        <a href="#" id="customer" class="nav-links">Customer</a>
-      </ul>
-      <button id="log-out">Log Out</button>
-    </div>
-
-    <div id="workspace">
-      <div class="image-display">Display image here</div>
-      <div class="item-info">
+  <section id="section-A">
+    <div class="container">
+      <div class="sidebar">
         <ul>
-          <label for="customer-name" id="customer-name">Customer Name: <input type="text" class="info"
-              readonly /></label>
+          <a href="#" id="logo-name">FastRoute</a>
+        </ul>
+        <hr />
+        <ul>
+          <a href="#" id="go-backs" class="nav-links">Go-Backs</a>
         </ul>
         <ul>
-          <label for="order-number" id="order-number">Order #: <input type="text" class="info" readonly /></label>
+          <a href="#" id="order-pick-ups" class="nav-links">Order Pick-Ups</a>
         </ul>
         <ul>
-          <label for="date">Date: <input type="text" class="info" readonly /></label>
+          <a href="#" id="ship-from-store" class="nav-links">Ship From Store</a>
         </ul>
         <ul>
-          <label for="product">Product: <input type="text" class="info" readonly /></label>
+          <a href="#" id="replenishment" class="nav-links">Replenish Inventory</a>
         </ul>
         <ul>
-          <label for="barcode">Barcode: <input type="text" class="info" readonly /></label>
+          <a href="#" id="customer" class="nav-links">Customer</a>
         </ul>
-        <ul>
-          <label for="location">Location: <input type="text" class="info" readonly />
-          </label>
-        </ul>
-        <ul>
-          <label for="aisle">Aisle: <input type="text" class="info" readonly /></label>
-        </ul>
+        <button id="log-out">Log Out</button>
       </div>
-      <div class="buttons">
-        <button id="skip">Skip</button>
-        <button id="scan-location">Scan Location</button>
+
+      <div id="workspace">
+        <div class="image-display">Display image here</div>
+        <div class="item-info">
+          <ul>
+            <label for="customer-name" id="customer-name">Customer Name: <input type="text" class="info"
+                readonly /></label>
+          </ul>
+          <ul>
+            <label for="order-number" id="order-number">Order #: <input type="text" class="info" readonly /></label>
+          </ul>
+          <ul>
+            <label for="date">Date: <input type="text" class="info" readonly /></label>
+          </ul>
+          <ul>
+            <label for="product">Product: <input type="text" class="info" readonly /></label>
+          </ul>
+          <ul>
+            <label for="barcode">Barcode: <input type="text" class="info" readonly /></label>
+          </ul>
+          <ul>
+            <label for="location">Location: <input type="text" class="info" readonly />
+            </label>
+          </ul>
+          <ul>
+            <label for="aisle">Aisle: <input type="text" class="info" readonly /></label>
+          </ul>
+        </div>
+        <div class="buttons">
+          <button id="skip">Skip</button>
+          <button id="scan-location">Scan Location</button>
+        </div>
+      </div>
+
+
+      <div id="replenish-inventory" class="toggle">
+        <button id="replenish-btn">Replenish Inventory</button>
       </div>
     </div>
+  </section>
 
-
-    <div id="replenish-inventory" class="toggle">
-      <button id="replenish-btn">Replenish Inventory</button>
+  <section id="section-B" class="toggle">
+    <div id="top-of-page">
+      <button id="back-btn">&larr; Back to Employee View</button>
     </div>
-  </div>
-
-  <section class="toggle">
     <div id="customer-view">
       <div class="products">
         <img src="images/coca-cola-6pk.jpg" alt="Coca Cola 6pk">
@@ -133,7 +138,7 @@
       </div>
       <div class="products">
         <img src="images/tea-tree-shampoo.jpg" alt="tea tree shampoo">
-        <label for="Tea Tree Shampoo" class="product-info">Tea Tree Shampoo</label>
+        <label for="Tea Tree Shampoo" class="product-name">Tea Tree Shampoo</label>
         <label for="in-stock" class="product-info">In stock: </label>
         <label for="quantity">Qty: <input type="text"></label>
         <span class="add-to-cart"><button class="add-to-cart-btn">Add to Cart</button></span>
