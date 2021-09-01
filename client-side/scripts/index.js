@@ -60,8 +60,58 @@ shipFromStore.addEventListener("click", function () {
   orderNumber.classList.remove("toggle");
 });
 
+// async/await used to ensure that fetch() calls are in order
+async function updateInventory(productNames, arraySize, requestMethod) {
+  for (let i = 0; i < arraySize; i++) {
+    console.log("Iteration: " + i);
+    let product = productNames[i].innerHTML;
+    let todayDate = new Date(); // Create new Date object
+    let date = todayDate.getDate();
+    let month = todayDate.getMonth() + 1;
+    let year = todayDate.getFullYear();
+    // Converting single digit for month and dates to double digit by concatenating a 0
+    if (date < 10) {
+      date = "0" + date;
+    }
+    if (month < 10) {
+      month = "0" + month;
+    }
+    todayDate = year + "-" + month + "-" + date; // Format date to yyyy-mm-dd
+
+    let productInfo = {
+      // Create JSON data for each iteration of requests
+      date: todayDate,
+      product: product,
+      barcode: i,
+      aisle: 10 + i,
+      quantity: 5,
+    };
+
+    let options = {
+      // options for fetch() POST method
+      method: requestMethod,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify(productInfo),
+    };
+    try {
+      let response = await fetch(
+        "http://localhost:5000/api/v1.0/inventory/backstock",
+        options
+      );
+      let data = await response.json();
+      console.log("RESPONSE: " + JSON.stringify(data) + "\n");
+      // return data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+
 // If "Replenish Inventory" link is clicked, display a button
 let replenishment = document.getElementById("replenishment");
+let productNames = document.getElementsByClassName("product-name");
 replenishment.addEventListener("click", function () {
   workspace.classList.add("toggle"); // Toggle off the product info
   replenishInventory.classList.remove("toggle"); // Remove the toggle class will allow the Replenish Inventory button to be displayed
@@ -69,13 +119,15 @@ replenishment.addEventListener("click", function () {
     // Utilize Fetch API to communicate with Flask back-end API
     fetch("http://127.0.0.1:5000/api/v1.0/inventory/backstock/checkDB") // Check to see if backstock table has existing rows
       .then((res) => res.json())
-      // .then((res) => {
-      // .then(res => console.log(res["message"]))
-      //   if (res["message"] === "Table has not been initialized") {
-
-      //   }
-      // })
-      .catch((err) => console.log(err));
+      .then((res) => {
+        if (res["message"] === "Table has not been initialized") {
+          console.log("Calling postRequest()...\n");
+          updateInventory(productNames, productNames.length, "POST");
+        } else {
+          updateInventory(productNames, productNames.length, "PUT");
+        }
+      })
+      .catch((error) => console.log(error));
   });
 });
 
