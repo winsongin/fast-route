@@ -136,13 +136,13 @@ img {
   font-weight: bold;
 }
 
-.add-to-cart {
+.purchase-option {
   display: flex;
   justify-content: center;
   margin-top: 10px;
 }
 
-.add-to-cart-btn {
+.purchase-option-btn {
   background-color: red;
   color: white;
   border-radius: 25px;
@@ -150,7 +150,7 @@ img {
   border: 2px solid black;
 }
 
-.add-to-cart-btn:hover {
+.purchase-option-btn:hover {
   background-color: white;
   color: red;
 }
@@ -179,6 +179,7 @@ img {
   margin-top: 30px;
   margin-left: 45px;
 }
+
 #back-btn {
   border-radius: 35px;
   color: red;

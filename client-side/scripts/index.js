@@ -124,6 +124,7 @@ replenishment.addEventListener("click", function () {
           console.log("Calling postRequest()...\n");
           updateInventory(productNames, productNames.length, "POST");
         } else {
+          console.log("Calling updateInventory function\n");
           updateInventory(productNames, productNames.length, "PUT");
         }
       })
@@ -149,11 +150,15 @@ customerLink.addEventListener("click", function () {
 });
 
 // Listen for Add to Cart button click
-let addToCartBtn = document.getElementsByClassName("add-to-cart-btn");
-for (let i = 0; i < addToCartBtn.length; i++) {
+let purchaseOptionBtn = document.getElementsByClassName("purchase-option-btn");
+for (let i = 0; i < purchaseOptionBtn.length; i++) {
   // getElementsByClassName returns a collection; iterate through each element to add an event listener individually
-  addToCartBtn[i].addEventListener("click", function () {
-    alert("button pressed");
+  purchaseOptionBtn[i].addEventListener("click", function () {
+    if (purchaseOptionBtn[i].innerHTML === "Pick It Up") {
+      alert("pick up button pressed!");
+    } else if (purchaseOptionBtn[i].innerHTML === "Ship It") {
+      alert("ship it button pressed!!");
+    }
   });
 }
 
