@@ -136,9 +136,20 @@ img {
   font-weight: bold;
 }
 
-.purchase-option {
+.quantity {
   display: flex;
   justify-content: center;
+}
+
+.qty-input {
+  width: 20px;
+  text-align: center;
+}
+
+.purchase-btns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
   margin-top: 10px;
 }
 
