@@ -149,16 +149,137 @@ customerLink.addEventListener("click", function () {
   }
 });
 
-// Listen for Add to Cart button click
-let purchaseOptionBtn = document.getElementsByClassName("purchase-option-btn");
-for (let i = 0; i < purchaseOptionBtn.length; i++) {
-  // getElementsByClassName returns a collection; iterate through each element to add an event listener individually
-  purchaseOptionBtn[i].addEventListener("click", function () {
-    if (purchaseOptionBtn[i].innerHTML === "Pick It Up") {
-      alert("pick up button pressed!");
-    } else if (purchaseOptionBtn[i].innerHTML === "Ship It") {
-      alert("ship it button pressed!!");
+// Add event listeners to increment and decrement buttons and perform action as needed
+let decrementBtns = document.getElementsByClassName("decrement-btns");
+let incrementBtns = document.getElementsByClassName("increment-btns");
+let quantityInput = document.getElementsByClassName("qty-input");
+for (let i = 0; i < quantityInput.length; i++) {
+  let value = parseInt(quantityInput[i].value);
+  // Listen for the '-' button clicks
+  decrementBtns[i].addEventListener("click", function () {
+    if (value > 1) {
+      // Prevent user from decrementing past the minimum/default value: 1
+      value = value - 1;
+      quantityInput[i].setAttribute("value", value);
     }
+  });
+  // Listen for the '+' button clicks
+  incrementBtns[i].addEventListener("click", function () {
+    value = value + 1;
+    quantityInput[i].setAttribute("value", value);
+  });
+}
+
+// fetch() requests for fulfillment orders
+async function updateFulfillment(list) {
+  try {
+    for (let i = 0; i < list.length; i++) {
+      let requestMethod = list[i].requestMethod;
+      let resource = list[i].resource;
+      let product = list[i].product;
+      let quantity = list[i].quantity.value;
+
+      var currentQuantity;
+      if (requestMethod === "GET") {
+        // Retrieve existing quantity in order to be later used to check users' quantity input
+        let queryString = `?product=${encodeURIComponent(
+          product
+        )}&quantity=${quantity}`;
+
+        let URL = `http://localhost:5000/api/v1.0${resource}`;
+        let response = await fetch(URL + queryString);
+        let data = await response.json();
+        currentQuantity = data.quantity;
+      } else if (requestMethod === "POST") {
+        console.log(currentQuantity);
+        if (quantity > currentQuantity) {
+          // Check the quantity that user enters does not exceed inventory quantity
+          throw "Error: Quantity exceeds available quantity\n";
+        }
+        let todayDate = new Date(); // Create new Date object
+        let date = todayDate.getDate();
+        let month = todayDate.getMonth() + 1;
+        let year = todayDate.getFullYear();
+        // Converting single digit for month and dates to double digit by concatenating a 0
+        if (date < 10) {
+          date = "0" + date;
+        }
+        if (month < 10) {
+          month = "0" + month;
+        }
+        todayDate = year + "-" + month + "-" + date; // Format date to yyyy-mm-dd
+
+        let productInfo = {
+          date: todayDate,
+          product: product,
+          barcode: 0,
+          aisle: 5,
+          quantity: quantity,
+          status: "Not Started",
+        };
+
+        // options for fetch() requests
+        let options = {
+          method: requestMethod,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+          },
+          body: JSON.stringify(productInfo),
+        };
+
+        let response = await fetch(
+          `http://localhost:5000/api/v1.0${resource}`,
+          options
+        );
+        let data = await response.json();
+        console.log(data);
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// Add event listeners for "Pick It Up" and "Ship It" buttons
+let pickItUp = document.getElementsByClassName("pick-it-up");
+let shipIt = document.getElementsByClassName("ship-it");
+for (let i = 0; i < pickItUp.length; i++) {
+  pickItUp[i].addEventListener("click", function () {
+    // // Execute a GET request to check current inventory quantity and that customer doesn't place an order > quantity available
+    let list = [
+      {
+        requestMethod: "GET",
+        resource: "/inventory/backstock",
+        product: productNames[i].innerHTML,
+        quantity: quantityInput[i],
+      },
+      {
+        requestMethod: "POST",
+        resource: "/fulfillment/OPU",
+        product: productNames[i].innerHTML,
+        quantity: quantityInput[i],
+      },
+    ];
+    updateFulfillment(list);
+  });
+
+  shipIt[i].addEventListener("click", function () {
+    let list = [
+      {
+        requestMethod: "GET",
+        resource: "/inventory/backstock",
+        product: productNames[i].innerHTML,
+        quantity: quantityInput[i],
+      },
+      {
+        requestMethod: "POST",
+        resource: "/fulfillment/SFS",
+        product: productNames[i].innerHTML,
+        quantity: quantityInput[i],
+      },
+    ];
+
+    updateFulfillment(list);
   });
 }
 
