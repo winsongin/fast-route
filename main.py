@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from datetime import date
 from configparser import ConfigParser
 from flask_cors import CORS, cross_origin
-from haversine import haversine, Unit
 import mysql.connector
 
 # Global variables initialization
