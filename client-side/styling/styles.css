@@ -50,8 +50,58 @@ a {
 }
 
 #workspace {
-  margin-left: 350px;
+  margin-left: 200px;
   margin-top: 30px;
+}
+
+#task-list {
+  margin-top: 30px;
+  margin-left: 50px;
+  margin-bottom: 600px;
+  border: 1px solid black;
+}
+
+.task-list-header {
+  text-align: center;
+  font-size: 25px;
+  color: red;
+  white-space: nowrap;
+  border-bottom: 1px solid red;
+}
+
+.tasks {
+  color: red;
+  width: 300px;
+  height: 50px;
+}
+
+.tasks button {
+  width: 100%;
+  height: 100%;
+  border: 1px solid black;
+}
+
+/* .batches {
+  background-color: #e6e6e6;
+  height: 30px;
+  border: 1px solid black;
+}
+
+.batches label {
+  color: red;
+}
+
+.batch-qty {
+  padding-left: 120px;
+} */
+
+#select-batch-btn button {
+  width: 100%;
+  height: 45px;
+}
+
+#select-batch-btn button:hover {
+  background-color: greenyellow;
 }
 
 .image-display {

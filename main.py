@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from datetime import date
 from configparser import ConfigParser
 from flask_cors import CORS, cross_origin
+from haversine import haversine, Unit
 import mysql.connector
 
 # Global variables initialization
@@ -10,7 +11,7 @@ batch = 0
 totalQty = 0
 dictLatLong = { 
     'Coca-Cola (6 pack)': (38.590576, -121.489906),
-    'Coca-Cola (12 pack)': (45.523064, -122.676483),
+    'Coca-Cola (12 pack)': (34.307144, -106.018066),
     'Double Edge Safety Razor': (45.523064, -122.676483),
     'Electric Shaver': (47.608013, 47.608013),
     'Firestone Walker 805': (33.501324, -111.925278),
@@ -90,8 +91,8 @@ databaseCursor.execute('CREATE TABLE IF NOT EXISTS orderPickUps ( \
     aisle INT NOT NULL, \
     quantity INT NOT NULL, \
     status VARCHAR(255) NOT NULL, \
-    latitude FLOAT(8,6) NOT NULL, \
-    longitude FLOAT(8,6) NOT NULL \
+    latitude FLOAT(10,6) NOT NULL, \
+    longitude FLOAT(10,6) NOT NULL \
 )')
 myDB.commit()
 
@@ -104,8 +105,8 @@ databaseCursor.execute('CREATE TABLE IF NOT EXISTS shipFromStore ( \
     aisle INT NOT NULL, \
     quantity INT NOT NULL, \
     status VARCHAR(255) NOT NULL, \
-    latitude FLOAT(8,6) NOT NULL, \
-    longitude FLOAT(8,6) NOT NULL \
+    latitude FLOAT(10,6) NOT NULL, \
+    longitude FLOAT(10,6) NOT NULL \
 )')
 myDB.commit()
 
@@ -255,16 +256,96 @@ def picks_for_OPUs():
 
     if request.method == 'GET': 
         
-        query = "SELECT COUNT(*) FROM orderPickUps" # Retrieve count of rows in table
-        databaseCursor.execute(query) 
-        count = databaseCursor.fetchone()
+        query = "SELECT * FROM orderPickUps"
+        databaseCursor.execute(query)
+        result = databaseCursor.fetchall()
+  
+        # Create a dictionary with the rows from the MySQL table
+        for i in range(len(result)): 
+            print("{}: {}".format(i, result[i]))
+            dictDatabase[i] = result[i]
 
-        message =  {'count': count[0]} 
-        return jsonify(message), 200
+        for i in range(len(result)):
+            for j in range(i, len(result)):
+                if j == i: 
+                    tempList.append((i, 0.0))
+                else: 
+                    coord1 = ((dictDatabase[i])[7], (dictDatabase[i])[8])
+                    coord2 = ((dictDatabase[j])[7], (dictDatabase[j])[8])
+                    distance = haversine(coord1, coord2, unit=Unit.MILES) # functon that uses Haversine formula to calculate distance between two (lat, long) coordinate points
+                    tempList.append((j, distance))
+                    # print("[{},{}]".format(i,j))
+        
+            dictGraph[i] = tempList
+            print("dictGraph[{}]: {}\n".format(i, dictGraph[i]))
+            tempList = [] # reset tempList to store (vertex, weight) tuples for next node/vertex in iteration
+
+        # Implement Prim's Algorithm to find Min. Spanning Tree
+        visitedVertices = [0] * len(dictGraph) # Initialize all vertices to 0(False) and change to 1(True) as they are selected
+        minWeight = INF
+        vertex = 0
+        minSpanTree = {}
+        edgeCount = 0 # Used to store number of edges added to Min. Spanning Tree
+        y = len(dictGraph[vertex])
+
+        while(edgeCount < len(visitedVertices)):
+
+            for i in range(len(dictGraph)):
+                for j in range(1, len(dictGraph[i])):
+
+                    if i == vertex: # if i == vertex, loop through each tuple in the respective list to determine which is minWeight
+
+                        tempVertex = ((dictGraph[i])[j])[0]
+                        weight = ((dictGraph[i])[j])[1]
+
+                    elif vertex == ((dictGraph[i])[j])[0]: # if i != vertex, loop through each tuple in the respective list UNTIL the edge from the tuple is equivalent to the currentVertex that we are exploring
+
+                        tempVertex = i # tempVertex is set to the current dictionary key being evaluated
+                        weight = ((dictGraph[i])[j])[1] 
+                        
+                    if visitedVertices[tempVertex] == 0 and weight < minWeight: # If the vertex has not been visited yet and the weight is smaller than the current minimum weight
+
+                        minWeight = weight
+                        minVertex = tempVertex
+
+            
+            visitedVertices[vertex] = True # Set the current vertex being evaluated to 1(True)
+
+            # Special case: last vertex to be connected to the tree
+            if edgeCount == len(visitedVertices) - 1: # If it is the last vertex to be connected to the MST, consider it visited because the tree will be complete and there will be no more checking of adjacent edges
+                visitedVertices[minVertex] = True
+                
+            minSpanTree[vertex] = (minVertex, minWeight) # Add edge to Min. Spanning Tree
+            edgeCount = edgeCount + 1 # Add 1 every time a new edge is added to Min. Spanning Tree
+            y = len(dictGraph[minVertex])
+            vertex = minVertex
+            minWeight = INF # reset minWeight
+
+        for i in range(len(dictGraph)): 
+            print("{}: {}".format(i, dictGraph[i]))
+
+        print("minSpanTree: {}\n".format(minSpanTree))
+        print("visitedVertices: {}\n".format(visitedVertices))
+
+        y = 0
+        fastestRouteDict = {} 
+        lastVertex = 0
+        for i in range(len(minSpanTree)+1): 
+            print("i: {}".format(i))
+            print("dictDatabase[{}]: {}".format(y, dictDatabase[y]))
+            fastestRouteDict[i] = dictDatabase[y]
+            if i != len(minSpanTree):
+                print("minSpanTree[{}]: {}".format(y, (minSpanTree[y])[0]))
+                y = (minSpanTree[y])[0]
+
+        for i in range(len(fastestRouteDict)): 
+            print("{}".format(fastestRouteDict[i]))
+
+        return jsonify(fastestRouteDict), 200
 
     elif request.method == 'POST':
 
-        if totalQty >= 15: # If the total quantity for n rows
+        if totalQty >= 15: # If the total quantity for the batch has reached 15, start a new batch
         
             batch += 1
             totalQty = 0
@@ -303,19 +384,106 @@ def picks_for_SFS():
     global totalQty
     global dictLatLong
 
-    if request.method == 'GET': 
-        
-        query = "SELECT COUNT(*) FROM shipFromStore" # Retrieve count of rows in table
-        databaseCursor.execute(query) 
-        count = databaseCursor.fetchone()
+    # Local variables
+    dictDatabase = {} # Stores all of the rows from the database table
+    dictGraph = {} # Adjacency list that represents a graph's edges and respective weights
+    tempList = [] # Temporary list to store tuples that represent edges and weights (i.e. (vertex, weight))
+    INF = 999999
 
-        message =  {'count': count[0]} 
-        return jsonify(message), 200
+    if request.method == 'GET': 
+
+        query = "SELECT * FROM shipFromStore"
+        databaseCursor.execute(query)
+        result = databaseCursor.fetchall()
+  
+        # Create a dictionary with the rows from the MySQL table
+        for i in range(len(result)): 
+            print("{}: {}".format(i, result[i]))
+            dictDatabase[i] = result[i]
+
+        for i in range(len(result)):
+            for j in range(i, len(result)):
+                if j == i: 
+                    tempList.append((i, 0.0))
+                else: 
+                    coord1 = ((dictDatabase[i])[7], (dictDatabase[i])[8])
+                    coord2 = ((dictDatabase[j])[7], (dictDatabase[j])[8])
+                    distance = haversine(coord1, coord2, unit=Unit.MILES) # functon that uses Haversine formula to calculate distance between two (lat, long) coordinate points
+                    tempList.append((j, distance))
+                    # print("[{},{}]".format(i,j))
+        
+            dictGraph[i] = tempList
+            print("dictGraph[{}]: {}\n".format(i, dictGraph[i]))
+            tempList = [] # reset tempList to store (vertex, weight) tuples for next node/vertex in iteration
+
+        # Implement Prim's Algorithm to find Min. Spanning Tree
+        visitedVertices = [0] * len(dictGraph) # Initialize all vertices to 0(False) and change to 1(True) as they are selected
+        minWeight = INF
+        vertex = 0
+        minSpanTree = {}
+        edgeCount = 0 # Used to store number of edges added to Min. Spanning Tree
+        y = len(dictGraph[vertex])
+
+        while(edgeCount < len(visitedVertices)):
+
+            for i in range(len(dictGraph)):
+                for j in range(1, len(dictGraph[i])):
+
+                    if i == vertex: # if i == vertex, loop through each tuple in the respective list to determine which is minWeight
+
+                        tempVertex = ((dictGraph[i])[j])[0]
+                        weight = ((dictGraph[i])[j])[1]
+
+                    elif vertex == ((dictGraph[i])[j])[0]: # if i != vertex, loop through each tuple in the respective list UNTIL the edge from the tuple is equivalent to the currentVertex that we are exploring
+
+                        tempVertex = i # tempVertex is set to the current dictionary key being evaluated
+                        weight = ((dictGraph[i])[j])[1]
+                        
+                    if visitedVertices[tempVertex] == 0 and weight < minWeight: # If the vertex has not been visited yet and the weight is smaller than the current minimum weight
+
+                        minWeight = weight
+                        minVertex = tempVertex
+
+            
+            visitedVertices[vertex] = True # Set the current vertex being evaluated to 1(True)
+
+            # Special case: last vertex to be connected to the tree
+            if edgeCount == len(visitedVertices) - 1: # If it is the last vertex to be connected to the MST, consider it visited because the tree will be complete and there will be no more checking of adjacent edges
+                visitedVertices[minVertex] = True
+                
+            minSpanTree[vertex] = (minVertex, minWeight) # Add edge to Min. Spanning Tree
+            edgeCount = edgeCount + 1 # Add 1 every time a new edge is added to Min. Spanning Tree
+            y = len(dictGraph[minVertex])
+            vertex = minVertex
+            minWeight = INF # reset minWeight
+
+        for i in range(len(dictGraph)): 
+            print("{}: {}".format(i, dictGraph[i]))
+
+        print("minSpanTree: {}\n".format(minSpanTree))
+        print("visitedVertices: {}\n".format(visitedVertices))
+
+        y = 0
+        fastestRouteDict = {} 
+        lastVertex = 0
+        for i in range(len(minSpanTree)+1): 
+            print("i: {}".format(i))
+            print("dictDatabase[{}]: {}".format(y, dictDatabase[y]))
+            fastestRouteDict[i] = dictDatabase[y]
+            if i != len(minSpanTree):
+                print("minSpanTree[{}]: {}".format(y, (minSpanTree[y])[0]))
+                y = (minSpanTree[y])[0]
+
+        print("\nfastestRouteDict: {}\n".format(fastestRouteDict))
+        # for i in range(len(fastestRouteDict)): 
+        #     print("{}".format(fastestRouteDict[i]))
+
+        return jsonify(fastestRouteDict), 200
 
 
     elif request.method == 'POST':
 
-        if totalQty >= 15: # If there are 5 or more rows, increment the batch number to start a new batch
+        if totalQty >= 15: # If the total quantity for the batch has reached 15, start a new batch
 
             batch += 1
             totalQty = 0
