@@ -262,84 +262,103 @@ def picks_for_OPUs():
   
         # Create a dictionary with the rows from the MySQL table
         for i in range(len(result)): 
-            print("{}: {}".format(i, result[i]))
             dictDatabase[i] = result[i]
 
-        for i in range(len(result)):
-            for j in range(i, len(result)):
-                if j == i: 
-                    tempList.append((i, 0.0))
-                else: 
-                    coord1 = ((dictDatabase[i])[7], (dictDatabase[i])[8])
-                    coord2 = ((dictDatabase[j])[7], (dictDatabase[j])[8])
-                    distance = haversine(coord1, coord2, unit=Unit.MILES) # functon that uses Haversine formula to calculate distance between two (lat, long) coordinate points
-                    tempList.append((j, distance))
-                    # print("[{},{}]".format(i,j))
+        biggestBatchNum = (dictDatabase[len(dictDatabase)-1])[0]
         
-            dictGraph[i] = tempList
-            print("dictGraph[{}]: {}\n".format(i, dictGraph[i]))
-            tempList = [] # reset tempList to store (vertex, weight) tuples for next node/vertex in iteration
+        for i in range(biggestBatchNum+1): # for-loop that loops through all batch numbers
+            start = 0
+            for j in range(start, len(dictDatabase)): 
+                if i == (dictDatabase[j])[0]: # If i is equal to the batch number of the SQL table row of iteration j
+                    tempDict[start] = dictDatabase[j]
+                    start = start + 1
+        
+            newDictDatabase[i] = tempDict
+            tempDict = {}
+    
+        tempDict = {} 
+        for i in range(len(newDictDatabase)): # loop through the batches
+            for j in range(len(newDictDatabase[i])): 
+                for k in range(j, len(newDictDatabase[i])): 
+                    if j == k: 
+                        tempList.append((k, 0.0))
+                    else: 
+                        coord1 = (((newDictDatabase[i])[j])[7], ((newDictDatabase[i])[j])[8])
+                        coord2 = (((newDictDatabase[i])[k])[7], ((newDictDatabase[i])[k])[8])
+                        distance = haversine(coord1, coord2, unit=Unit.MILES) # functon that uses Haversine formula to calculate distance between two (lat, long) coordinate points
+                        tempList.append((k, distance))
 
-        # Implement Prim's Algorithm to find Min. Spanning Tree
-        visitedVertices = [0] * len(dictGraph) # Initialize all vertices to 0(False) and change to 1(True) as they are selected
-        minWeight = INF
-        vertex = 0
-        minSpanTree = {}
-        edgeCount = 0 # Used to store number of edges added to Min. Spanning Tree
-        y = len(dictGraph[vertex])
+                tempDict[j] = tempList
+                tempList = []
 
-        while(edgeCount < len(visitedVertices)):
-
-            for i in range(len(dictGraph)):
-                for j in range(1, len(dictGraph[i])):
-
-                    if i == vertex: # if i == vertex, loop through each tuple in the respective list to determine which is minWeight
-
-                        tempVertex = ((dictGraph[i])[j])[0]
-                        weight = ((dictGraph[i])[j])[1]
-
-                    elif vertex == ((dictGraph[i])[j])[0]: # if i != vertex, loop through each tuple in the respective list UNTIL the edge from the tuple is equivalent to the currentVertex that we are exploring
-
-                        tempVertex = i # tempVertex is set to the current dictionary key being evaluated
-                        weight = ((dictGraph[i])[j])[1] 
-                        
-                    if visitedVertices[tempVertex] == 0 and weight < minWeight: # If the vertex has not been visited yet and the weight is smaller than the current minimum weight
-
-                        minWeight = weight
-                        minVertex = tempVertex
-
+            dictGraph[i] = tempDict
+            tempDict = {}
             
-            visitedVertices[vertex] = True # Set the current vertex being evaluated to 1(True)
+        fastestRouteDict = {}
+        for i in range(len(dictGraph)):
+            visitedVertices = [0] * len(dictGraph[i])
+            minWeight = INF
+            weight = INF
+            vertex = 0 # starting vertex
+            minSpanTree = {} 
+            edgeCount = 0
 
-            # Special case: last vertex to be connected to the tree
-            if edgeCount == len(visitedVertices) - 1: # If it is the last vertex to be connected to the MST, consider it visited because the tree will be complete and there will be no more checking of adjacent edges
-                visitedVertices[minVertex] = True
-                
-            minSpanTree[vertex] = (minVertex, minWeight) # Add edge to Min. Spanning Tree
-            edgeCount = edgeCount + 1 # Add 1 every time a new edge is added to Min. Spanning Tree
-            y = len(dictGraph[minVertex])
-            vertex = minVertex
-            minWeight = INF # reset minWeight
+            while(edgeCount < len(visitedVertices)): 
 
-        for i in range(len(dictGraph)): 
-            print("{}: {}".format(i, dictGraph[i]))
+                if edgeCount == len(visitedVertices)-1 and minWeight == INF: # If it is the last vertex to be connected to the Min. Span Tree, mark it as visited
+                    visitedVertices[minVertex] = True
+                    break # break from while-loop to avoid exploring the last vertex as it has already been connected to the Min. Span Tree
 
-        print("minSpanTree: {}\n".format(minSpanTree))
-        print("visitedVertices: {}\n".format(visitedVertices))
+                for j in range(len(dictGraph[i])): # Loops through the vertices of each batch 
+                    for k in range(1, len((dictGraph[i])[j])): # Loops through each tuple [i.e. (edge, weight) pair]; starts at 1 to avoid 0.0 weight
 
-        y = 0
-        fastestRouteDict = {} 
-        lastVertex = 0
-        for i in range(len(minSpanTree)+1): 
-            print("i: {}".format(i))
-            print("dictDatabase[{}]: {}".format(y, dictDatabase[y]))
-            fastestRouteDict[i] = dictDatabase[y]
-            if i != len(minSpanTree):
-                print("minSpanTree[{}]: {}".format(y, (minSpanTree[y])[0]))
-                y = (minSpanTree[y])[0]
+                        if j == vertex: 
+                            
+                            tempVertex = (((dictGraph[i])[j])[k])[0]
+                            weight = (((dictGraph[i])[j])[k])[1]
 
+                        elif vertex == (((dictGraph[i])[j])[k])[0]: 
+
+                            tempVertex = j
+                            weight = (((dictGraph[i])[j])[k])[1]
+
+                        if visitedVertices[tempVertex] == 0 and weight < minWeight: 
+
+                            minWeight = weight 
+                            minVertex = tempVertex
+
+                visitedVertices[vertex] = True # Mark the vertex as visited     
+
+                minSpanTree[vertex] = (minVertex, minWeight) # Add to minSpanTree aka the dictionary that holds the route
+                edgeCount = edgeCount + 1 # Update edgeCount to ensure that the number of edges is n-1; n being the number of vertices
+                vertex = minVertex # Set the next vertex to the current minVertex as that will be explored next
+                minWeight = INF # Reset minWeight for next while-loop iteration
+                # Reset weight and tempVertex to prevent inaccuracy in calculations by using weight and tempVertex from last while-loop's iteration
+                weight = INF 
+                tempVertex = minVertex
+
+            fastestRouteDict[i] = minSpanTree # Assign batch i in fastestRouteDict to its corresponding Min. Span Tree
+        
+        # for i in range(len(fastestRouteDict)):
+        #     print("fastestRouteDict[batch][{}]: {}".format(i, fastestRouteDict[i]))
+
+        fastestRouteBatches = {}
+        tempDict = {}
+        # Replace all the vertices with the corresponding table entry from MySQL database
         for i in range(len(fastestRouteDict)): 
-            print("{}".format(fastestRouteDict[i]))
+            y = 0 # starting vertex of every iteration
+            for j in range(len(fastestRouteDict[i])+1): 
+                tempDict[j] = (newDictDatabase[i])[y]
+                if j != len(fastestRouteDict[i]): # If it is not the last (edge, weight) tuple to be explored in batch i's dictionary, set y to the edge from that tuple
+                    y = ((fastestRouteDict[i])[y])[0]
+
+            fastestRouteBatches[i] = tempDict
+            tempDict = {}
+
+        # for i in range(len(fastestRouteBatches)): 
+        #     print("fastestRouteBatches[{}]: ".format(i))
+        #     for j in range(len(fastestRouteBatches[i])): 
+        #         print("\t{}: {}".format(j, (fastestRouteBatches[i])[j]))
 
         return jsonify(fastestRouteDict), 200
 
@@ -386,6 +405,8 @@ def picks_for_SFS():
 
     # Local variables
     dictDatabase = {} # Stores all of the rows from the database table
+    newDictDatabase = {} # Stores all of the rows from the database table based on batches
+    tempDict = {} # Used to temporarily store all vertices for each batch
     dictGraph = {} # Adjacency list that represents a graph's edges and respective weights
     tempList = [] # Temporary list to store tuples that represent edges and weights (i.e. (vertex, weight))
     INF = 999999
@@ -398,87 +419,105 @@ def picks_for_SFS():
   
         # Create a dictionary with the rows from the MySQL table
         for i in range(len(result)): 
-            print("{}: {}".format(i, result[i]))
             dictDatabase[i] = result[i]
 
-        for i in range(len(result)):
-            for j in range(i, len(result)):
-                if j == i: 
-                    tempList.append((i, 0.0))
-                else: 
-                    coord1 = ((dictDatabase[i])[7], (dictDatabase[i])[8])
-                    coord2 = ((dictDatabase[j])[7], (dictDatabase[j])[8])
-                    distance = haversine(coord1, coord2, unit=Unit.MILES) # functon that uses Haversine formula to calculate distance between two (lat, long) coordinate points
-                    tempList.append((j, distance))
-                    # print("[{},{}]".format(i,j))
+        biggestBatchNum = (dictDatabase[len(dictDatabase)-1])[0]
         
-            dictGraph[i] = tempList
-            print("dictGraph[{}]: {}\n".format(i, dictGraph[i]))
-            tempList = [] # reset tempList to store (vertex, weight) tuples for next node/vertex in iteration
+        for i in range(biggestBatchNum+1): # for-loop that loops through all batch numbers
+            start = 0
+            for j in range(start, len(dictDatabase)): 
+                if i == (dictDatabase[j])[0]: # If i is equal to the batch number of the SQL table row of iteration j
+                    tempDict[start] = dictDatabase[j]
+                    start = start + 1
+        
+            newDictDatabase[i] = tempDict
+            tempDict = {}
+    
+        tempDict = {} 
+        for i in range(len(newDictDatabase)): # loop through the batches
+            for j in range(len(newDictDatabase[i])): 
+                for k in range(j, len(newDictDatabase[i])): 
+                    if j == k: 
+                        tempList.append((k, 0.0))
+                    else: 
+                        coord1 = (((newDictDatabase[i])[j])[7], ((newDictDatabase[i])[j])[8])
+                        coord2 = (((newDictDatabase[i])[k])[7], ((newDictDatabase[i])[k])[8])
+                        distance = haversine(coord1, coord2, unit=Unit.MILES) # functon that uses Haversine formula to calculate distance between two (lat, long) coordinate points
+                        tempList.append((k, distance))
 
-        # Implement Prim's Algorithm to find Min. Spanning Tree
-        visitedVertices = [0] * len(dictGraph) # Initialize all vertices to 0(False) and change to 1(True) as they are selected
-        minWeight = INF
-        vertex = 0
-        minSpanTree = {}
-        edgeCount = 0 # Used to store number of edges added to Min. Spanning Tree
-        y = len(dictGraph[vertex])
+                tempDict[j] = tempList
+                tempList = []
 
-        while(edgeCount < len(visitedVertices)):
-
-            for i in range(len(dictGraph)):
-                for j in range(1, len(dictGraph[i])):
-
-                    if i == vertex: # if i == vertex, loop through each tuple in the respective list to determine which is minWeight
-
-                        tempVertex = ((dictGraph[i])[j])[0]
-                        weight = ((dictGraph[i])[j])[1]
-
-                    elif vertex == ((dictGraph[i])[j])[0]: # if i != vertex, loop through each tuple in the respective list UNTIL the edge from the tuple is equivalent to the currentVertex that we are exploring
-
-                        tempVertex = i # tempVertex is set to the current dictionary key being evaluated
-                        weight = ((dictGraph[i])[j])[1]
-                        
-                    if visitedVertices[tempVertex] == 0 and weight < minWeight: # If the vertex has not been visited yet and the weight is smaller than the current minimum weight
-
-                        minWeight = weight
-                        minVertex = tempVertex
-
+            dictGraph[i] = tempDict
+            tempDict = {}
             
-            visitedVertices[vertex] = True # Set the current vertex being evaluated to 1(True)
+        fastestRouteDict = {}
+        for i in range(len(dictGraph)):
+            visitedVertices = [0] * len(dictGraph[i])
+            minWeight = INF
+            weight = INF
+            vertex = 0 # starting vertex
+            minSpanTree = {} 
+            edgeCount = 0
 
-            # Special case: last vertex to be connected to the tree
-            if edgeCount == len(visitedVertices) - 1: # If it is the last vertex to be connected to the MST, consider it visited because the tree will be complete and there will be no more checking of adjacent edges
-                visitedVertices[minVertex] = True
-                
-            minSpanTree[vertex] = (minVertex, minWeight) # Add edge to Min. Spanning Tree
-            edgeCount = edgeCount + 1 # Add 1 every time a new edge is added to Min. Spanning Tree
-            y = len(dictGraph[minVertex])
-            vertex = minVertex
-            minWeight = INF # reset minWeight
+            while(edgeCount < len(visitedVertices)): 
 
-        for i in range(len(dictGraph)): 
-            print("{}: {}".format(i, dictGraph[i]))
+                if edgeCount == len(visitedVertices)-1 and minWeight == INF: # If it is the last vertex to be connected to the Min. Span Tree, mark it as visited
+                    visitedVertices[minVertex] = True
+                    break # break from while-loop to avoid exploring the last vertex as it has already been connected to the Min. Span Tree
 
-        print("minSpanTree: {}\n".format(minSpanTree))
-        print("visitedVertices: {}\n".format(visitedVertices))
+                for j in range(len(dictGraph[i])): # Loops through the vertices of each batch 
+                    for k in range(1, len((dictGraph[i])[j])): # Loops through each tuple [i.e. (edge, weight) pair]; starts at 1 to avoid 0.0 weight
 
-        y = 0
-        fastestRouteDict = {} 
-        lastVertex = 0
-        for i in range(len(minSpanTree)+1): 
-            print("i: {}".format(i))
-            print("dictDatabase[{}]: {}".format(y, dictDatabase[y]))
-            fastestRouteDict[i] = dictDatabase[y]
-            if i != len(minSpanTree):
-                print("minSpanTree[{}]: {}".format(y, (minSpanTree[y])[0]))
-                y = (minSpanTree[y])[0]
+                        if j == vertex: 
+                            
+                            tempVertex = (((dictGraph[i])[j])[k])[0]
+                            weight = (((dictGraph[i])[j])[k])[1]
 
-        print("\nfastestRouteDict: {}\n".format(fastestRouteDict))
-        # for i in range(len(fastestRouteDict)): 
-        #     print("{}".format(fastestRouteDict[i]))
+                        elif vertex == (((dictGraph[i])[j])[k])[0]: 
 
-        return jsonify(fastestRouteDict), 200
+                            tempVertex = j
+                            weight = (((dictGraph[i])[j])[k])[1]
+
+                        if visitedVertices[tempVertex] == 0 and weight < minWeight: 
+
+                            minWeight = weight 
+                            minVertex = tempVertex
+
+                visitedVertices[vertex] = True # Mark the vertex as visited     
+
+                minSpanTree[vertex] = (minVertex, minWeight) # Add to minSpanTree aka the dictionary that holds the route
+                edgeCount = edgeCount + 1 # Update edgeCount to ensure that the number of edges is n-1; n being the number of vertices
+                vertex = minVertex # Set the next vertex to the current minVertex as that will be explored next
+                minWeight = INF # Reset minWeight for next while-loop iteration
+                # Reset weight and tempVertex to prevent inaccuracy in calculations by using weight and tempVertex from last while-loop's iteration
+                weight = INF 
+                tempVertex = minVertex
+
+            fastestRouteDict[i] = minSpanTree # Assign batch i in fastestRouteDict to its corresponding Min. Span Tree
+        
+        # for i in range(len(fastestRouteDict)):
+        #     print("fastestRouteDict[batch][{}]: {}".format(i, fastestRouteDict[i]))
+
+        fastestRouteBatches = {}
+        tempDict = {}
+        # Replace all the vertices with the corresponding table entry from MySQL database
+        for i in range(len(fastestRouteDict)): 
+            y = 0 # starting vertex of every iteration
+            for j in range(len(fastestRouteDict[i])+1): 
+                tempDict[j] = (newDictDatabase[i])[y]
+                if j != len(fastestRouteDict[i]): # If it is not the last (edge, weight) tuple to be explored in batch i's dictionary, set y to the edge from that tuple
+                    y = ((fastestRouteDict[i])[y])[0]
+
+            fastestRouteBatches[i] = tempDict
+            tempDict = {}
+
+        for i in range(len(fastestRouteBatches)): 
+            print("fastestRouteBatches[{}]: ".format(i))
+            for j in range(len(fastestRouteBatches[i])): 
+                print("\t{}: {}".format(j, (fastestRouteBatches[i])[j]))
+
+        return jsonify(fastestRouteBatches), 200
 
 
     elif request.method == 'POST':

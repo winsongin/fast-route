@@ -25,6 +25,7 @@ goBacks.addEventListener("click", function () {
 
 let orderPickUps = document.getElementById("order-pick-ups");
 orderPickUps.addEventListener("click", function () {
+  taskList.classList.remove("toggle"); // Display task list when Order Pick-Ups tab is clicked on
   if (workspace.classList.contains("toggle")) {
     workspace.classList.remove("toggle"); // Remove the toggle so that the product info will display
   }
@@ -43,6 +44,7 @@ orderPickUps.addEventListener("click", function () {
 
 let shipFromStore = document.getElementById("ship-from-store");
 shipFromStore.addEventListener("click", function () {
+  taskList.classList.remove("toggle"); // Display task list when Ship From Store tab is clicked on
   if (workspace.classList.contains("toggle")) {
     workspace.classList.remove("toggle"); // Remove the toggle so that the product info will display
   }
@@ -114,6 +116,7 @@ let replenishment = document.getElementById("replenishment");
 let productNames = document.getElementsByClassName("product-name");
 replenishment.addEventListener("click", function () {
   workspace.classList.add("toggle"); // Toggle off the product info
+  taskList.classList.add("toggle"); // Remove task list when replenishing inventory
   replenishInventory.classList.remove("toggle"); // Remove the toggle class will allow the Replenish Inventory button to be displayed
   replenishInventory.addEventListener("click", function () {
     // Utilize Fetch API to communicate with Flask back-end API
@@ -245,8 +248,7 @@ let pickItUp = document.getElementsByClassName("pick-it-up");
 let shipIt = document.getElementsByClassName("ship-it");
 for (let i = 0; i < pickItUp.length; i++) {
   pickItUp[i].addEventListener("click", function () {
-    let list = [
-      {
+    let list = [{
         requestMethod: "GET",
         resource: "/inventory/backstock",
         product: productNames[i].innerHTML,
@@ -263,8 +265,7 @@ for (let i = 0; i < pickItUp.length; i++) {
   });
 
   shipIt[i].addEventListener("click", function () {
-    let list = [
-      {
+    let list = [{
         requestMethod: "GET",
         resource: "/inventory/backstock",
         product: productNames[i].innerHTML,
@@ -297,68 +298,76 @@ backBtn.addEventListener("click", function () {
 });
 
 let taskBtn = document.getElementById("task-button");
-let taskList = document.getElementById("task-list");
+var taskList = document.getElementById("task-list");
+let batchCount = -1;
+let batchLength;
 taskBtn.addEventListener("click", function () {
   fetch("http://localhost:5000/api/v1.0/fulfillment/SFS")
     .then((res) => res.json())
     .then((res) => {
-      let batchCount = -1;
-      let batchLength = 0;
       for (const key in res) {
-        if (res.hasOwnProperty(key)) {
-          if (res[key][0] > batchCount) {
-            batchCount++;
-            // Create new batch labels everytime a new batch is detected
-            var newBatch = document.createElement("div");
-            let batchLabel = document.createElement("label");
-            let batchInput = document.createElement("input");
-            var batchQtyLabel = document.createElement("label");
-            newBatch.setAttribute("class", "batches");
-            batchLabel.setAttribute("class", "batch-label");
-            batchInput.setAttribute("type", "radio");
-            batchInput.setAttribute("name", "batch-list");
-            batchInput.setAttribute("value", batchCount);
-            batchQtyLabel.setAttribute("class", "batch-qty");
-            let batchNumText = document.createTextNode("Batch " + batchCount);
-            console.log("This is batchNumText: " + batchNumText.textContent);
-            batchLabel.appendChild(batchInput);
-            batchLabel.appendChild(batchNumText);
-            newBatch.appendChild(batchLabel);
-            newBatch.appendChild(batchQtyLabel);
-            let startBtn = document.getElementById("select-batch-btn");
-            startBtn.parentNode.insertBefore(newBatch, startBtn);
-            // taskList.appendChild(newBatch);
-          } else if (res[key][0] == batchCount) {
-            batchLength++;
+        batchLength = 0; // reset batchLength to count the number of products in each batch
+        console.log("This is batch: " + key);
+        for (const value in res) {
+          if (res[key].hasOwnProperty(value)) {
+            // console.log("(res[key])[value]: " + (res[key])[value]);
+            if (((res[key])[value])[0] > batchCount) {
+              batchCount++;
+              // Create new batch labels everytime a new batch is detected
+              var newBatch = document.createElement("div");
+              let batchLabel = document.createElement("label");
+              let batchInput = document.createElement("input");
+              var batchQtyLabel = document.createElement("label");
+              var batchDiv = document.createElement("div");
+              newBatch.setAttribute("class", "batches");
+              batchLabel.setAttribute("class", "batch-label");
+              batchInput.setAttribute("type", "radio");
+              batchInput.setAttribute("name", "batch-list");
+              batchInput.setAttribute("value", batchCount);
+              batchQtyLabel.setAttribute("class", "batch-qty");
+              let batchNumText = document.createTextNode("Batch " + batchCount);
+              // console.log("This is batchNumText: " + batchNumText.textContent);
+              batchLabel.appendChild(batchInput);
+              batchLabel.appendChild(batchNumText);
+              newBatch.appendChild(batchLabel);
+              newBatch.appendChild(batchQtyLabel);
+              batchDiv.appendChild(newBatch);
+              let startBtn = document.getElementById("select-batch-btn");
+              startBtn.parentNode.insertBefore(batchDiv, startBtn);
+              // taskList.appendChild(newBatch);
+            }
+            if (((res[key])[value])[0] == batchCount) {
+              batchLength++;
+            }
           }
         }
-      }
-      let batchQtyLabelText = document.createTextNode("Qty: " + batchLength);
-      batchQtyLabel.append(batchQtyLabelText);
-      for (
-        let i = 0;
-        i < document.getElementsByClassName("batches").length;
-        i++
-      ) {
-        document.getElementsByClassName("batches")[i].style.backgroundColor =
-          "#e6e6e6";
-        document.getElementsByClassName("batches")[i].style.height = "30px";
-        document.getElementsByClassName("batches")[i].style.border =
-          "1px solid black";
-        document.getElementsByClassName("batch-label")[i].style.color = "red";
-        document.getElementsByClassName("batch-qty")[i].style.color = "red";
-        document.getElementsByClassName("batch-qty")[i].style.marginLeft =
-          "150px";
+        console.log("batchLength: " + batchLength);
+        let batchQtyLabelText = document.createTextNode("Qty: " + batchLength);
+        batchQtyLabel.append(batchQtyLabelText);
+        for (
+          let i = 0; i < document.getElementsByClassName("batches").length; i++
+        ) {
+          // Style elements that are related to batch labels
+          document.getElementsByClassName("batches")[i].style.backgroundColor =
+            "#e6e6e6";
+          document.getElementsByClassName("batches")[i].style.height = "30px";
+          document.getElementsByClassName("batches")[i].style.border =
+            "1px solid black";
+          document.getElementsByClassName("batch-label")[i].style.color = "red";
+          document.getElementsByClassName("batch-qty")[i].style.color = "red";
+          document.getElementsByClassName("batch-qty")[i].style.marginLeft =
+            "150px";
+        }
       }
     })
     .catch((error) => console.log("Error: " + error));
 
   // // Toggle the drop-down list to show or hide batches
-  // for (let i = 0; i < batches.length; i++) {
-  //   if (!batches[i].classList.contains("toggle")) {
-  //     batches[i].classList.add("toggle");
+  // for (let i = 0; i < newBatch.length; i++) {
+  //   if (!newBatch[i].classList.contains("toggle")) {
+  //     newBatches[i].classList.add("toggle");
   //   } else {
-  //     batches[i].classList.remove("toggle");
+  //     newBatches[i].classList.remove("toggle");
   //   }
   // }
 });
