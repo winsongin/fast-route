@@ -6,23 +6,6 @@ let scanItemButton = document.getElementById("scan-location");
 let workspace = document.getElementById("workspace");
 let replenishInventory = document.getElementById("replenish-inventory");
 
-let goBacks = document.getElementById("go-backs");
-goBacks.addEventListener("click", function () {
-  if (workspace.classList.contains("toggle")) {
-    workspace.classList.remove("toggle"); // Remove the toggle so that the product info will display
-  }
-  if (!workspace.classList.contains("toggle")) {
-    replenishInventory.classList.add("toggle"); // Add the toggle back so that the Replenish Inventory button will be hidden
-  }
-  while (scanItemButton.firstChild) {
-    scanItemButton.removeChild(scanItemButton.firstChild);
-  }
-  scanItemButton.appendChild(document.createTextNode("Scan Location"));
-  // Toggle off Customer Name and Order Number
-  customer.classList.add("toggle");
-  orderNumber.classList.add("toggle");
-});
-
 let orderPickUps = document.getElementById("order-pick-ups");
 orderPickUps.addEventListener("click", function () {
   taskList.classList.remove("toggle"); // Display task list when Order Pick-Ups tab is clicked on
@@ -248,7 +231,8 @@ let pickItUp = document.getElementsByClassName("pick-it-up");
 let shipIt = document.getElementsByClassName("ship-it");
 for (let i = 0; i < pickItUp.length; i++) {
   pickItUp[i].addEventListener("click", function () {
-    let list = [{
+    let list = [
+      {
         requestMethod: "GET",
         resource: "/inventory/backstock",
         product: productNames[i].innerHTML,
@@ -265,7 +249,8 @@ for (let i = 0; i < pickItUp.length; i++) {
   });
 
   shipIt[i].addEventListener("click", function () {
-    let list = [{
+    let list = [
+      {
         requestMethod: "GET",
         resource: "/inventory/backstock",
         product: productNames[i].innerHTML,
@@ -301,17 +286,19 @@ let taskBtn = document.getElementById("task-button");
 var taskList = document.getElementById("task-list");
 let batchCount = -1;
 let batchLength;
+var savedResult;
 taskBtn.addEventListener("click", function () {
   fetch("http://localhost:5000/api/v1.0/fulfillment/SFS")
     .then((res) => res.json())
     .then((res) => {
+      savedResult = res; // save the result so that it can later be used to display to the workspace
       for (const key in res) {
         batchLength = 0; // reset batchLength to count the number of products in each batch
         console.log("This is batch: " + key);
         for (const value in res) {
           if (res[key].hasOwnProperty(value)) {
             // console.log("(res[key])[value]: " + (res[key])[value]);
-            if (((res[key])[value])[0] > batchCount) {
+            if (res[key][value][0] > batchCount) {
               batchCount++;
               // Create new batch labels everytime a new batch is detected
               var newBatch = document.createElement("div");
@@ -336,7 +323,7 @@ taskBtn.addEventListener("click", function () {
               startBtn.parentNode.insertBefore(batchDiv, startBtn);
               // taskList.appendChild(newBatch);
             }
-            if (((res[key])[value])[0] == batchCount) {
+            if (res[key][value][0] == batchCount) {
               batchLength++;
             }
           }
@@ -345,7 +332,9 @@ taskBtn.addEventListener("click", function () {
         let batchQtyLabelText = document.createTextNode("Qty: " + batchLength);
         batchQtyLabel.append(batchQtyLabelText);
         for (
-          let i = 0; i < document.getElementsByClassName("batches").length; i++
+          let i = 0;
+          i < document.getElementsByClassName("batches").length;
+          i++
         ) {
           // Style elements that are related to batch labels
           document.getElementsByClassName("batches")[i].style.backgroundColor =
@@ -374,9 +363,78 @@ taskBtn.addEventListener("click", function () {
 
 let selectBatchBtn = document.getElementById("select-batch-btn");
 let batchLabel = document.getElementsByClassName("batch-label");
+let radios = document.getElementsByName("batch-list");
+let orderInfo = document.getElementsByClassName("info");
+let scanLocationBtn = document.getElementById("scan-location");
 selectBatchBtn.addEventListener("click", function () {
   // Determine which batch the user selected when they click the start button
-  for (let i = 0; i < batchLabel.length; i++) {
-    console.log("Batch: " + batchLabel[i].firstChild.value);
+  for (let i = 0; i < radios.length; i++) {
+    if (radios[i].checked) {
+      // check which radio button was checked
+      console.log("radio[" + i + "] has been selected!");
+      for (let j = 0; j < radios.length; j++) {
+        if (j == i) {
+          radios[j].checked = true; // Visually set the batch that was selected to be checked
+        }
+        radios[j].disabled = true; // Make all other batches unable to be selected if one batch is already in progress
+      }
+      let order = 0;
+      for (let s = 0; s < savedResult[i][order].length - 2; s++) {
+        // Reduce length of for loop by 2 to avoid indices 7 and 8
+        try {
+          if (s == 6) {
+            // Instead of having the status displayed at index 6, display the location as (longitude, latitude)
+            let location =
+              "(" +
+              savedResult[i][order][7] +
+              "," +
+              savedResult[i][order][8] +
+              ")";
+            orderInfo[s].value = location;
+          } else {
+            orderInfo[s].value = savedResult[i][order][s];
+          }
+        } catch (err) {
+          console.log("Index: " + s + " Error: " + err);
+        }
+      }
+
+      scanLocationBtn.addEventListener("click", function () {
+        if (order == Object.keys(savedResult[i]).length - 1) {
+          for (let v = 0; v < savedResult[i][order].length - 2; v++) {
+            try {
+              orderInfo[v].value = "";
+            } catch (err) {
+              console.log("Index: " + v + " Error: " + err);
+            }
+          }
+          scanLocationBtn.disabled = true;
+          console.log("LAST PRODUCT IN BATCH");
+        }
+        order = order + 1;
+        for (let v = 0; v < savedResult[i][order].length - 2; v++) {
+          try {
+            if (v == 6) {
+              // Instead of having the status displayed at index 6, display the location as (longitude, latitude)
+              let location =
+                "(" +
+                savedResult[i][order][7] +
+                "," +
+                savedResult[i][order][8] +
+                ")";
+              orderInfo[v].value = location;
+              console.log(location);
+            } else {
+              console.log(savedResult[i][order][v]);
+              orderInfo[v].value = savedResult[i][order][v];
+            }
+          } catch (err) {
+            console.log("Index: " + v + " Error: " + err);
+          }
+        }
+      });
+
+      // Start displaying product information to workspace
+    }
   }
 });
