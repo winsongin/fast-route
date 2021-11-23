@@ -30,6 +30,27 @@ dictLatLong = {
     'Tide Detergent': (48.769768, -122.485886)
 }
 
+dictBarcodesAisles = { 
+    'Coca-Cola (6 pack)': (758690, 28),  
+    'Coca-Cola (12 pack)': (234098, 22),
+    'Double Edge Safety Razor': (120385, 20),
+    'Electric Shaver': (123985, 26), 
+    'Firestone Walker 805': (392094, 21), 
+    'Elysian Space Dust IPA': (148593, 29), 
+    'Sierra Nevada Hazy IPA': (820492, 23), 
+    'Sour Patch Kids': (675839, 30), 
+    'Tea Tree Shampoo': (495920, 10), 
+    'Tennis Ball - 1 Can (3 Balls)': (557329, 9), 
+    'Tylenol': (298340, 15), 
+    'Advil': (572920, 11), 
+    'Dyson Hair Dryer': (823479, 12), 
+    'Dog Food': (938473, 17),
+    'Crest 3D White Toothpaste': (402395, 18), 
+    'Basketball': (768949, 25), 
+    'Monopoly Board Game': (329589, 14),
+    'Tide Detergent': (543039, 5)
+}
+
 load_dotenv() # Load environment variables from .env file
 
 app = Flask(__name__)
@@ -183,6 +204,7 @@ def initializeDB():
 @app.route('/api/v1.0/inventory/backstock', methods=['GET', 'PUT', 'POST', 'OPTIONS'])
 @cross_origin()
 def backstock_product(): 
+        global dictBarcodesAisles
 
         # Get the quantity and aisle for a product
         if request.method == 'GET': 
@@ -204,8 +226,10 @@ def backstock_product():
             
             date = parameters['date']
             product = parameters['product'] 
-            barcode = parameters['barcode']
-            aisle = parameters['aisle']
+            barcode = (dictBarcodesAisles[product])[0]
+            aisle = (dictBarcodesAisles[product])[1]
+            # barcode = parameters['barcode']
+            # aisle = parameters['aisle']
             quantity = parameters['quantity']
             
             # Get the current quantity in the backstock inventory so that new quantity can be added to it
@@ -230,13 +254,17 @@ def backstock_product():
             parameters = request.get_json()
 
             date = parameters['date']
-            product = parameters['product']
-            barcode = parameters['barcode']
-            aisle = parameters['aisle']
+            product = parameters['product'] 
+            barcode = (dictBarcodesAisles[product])[0]
+            # print("Barcode: {}".format(barcode))
+            aisle = (dictBarcodesAisles[product])[1]
+            # print("Aisle: {}".format(aisle))
+            # barcode = parameters['barcode']
+            # aisle = parameters['aisle']
             quantity = parameters['quantity']
 
             query = "INSERT INTO backstock (date, product, barcode, aisle, quantity) VALUES (%s, %s, %s, %s, %s)"
-            values = (date, product, barcode, aisle, quantity)
+            values = (date, product, int(barcode), int(aisle), quantity)
             databaseCursor.execute(query, values)
             myDB.commit()
 
@@ -253,6 +281,15 @@ def picks_for_OPUs():
     global batch
     global totalQty
     global dictLatLong
+    global dictBarcodesAisles
+
+    # Local variables
+    dictDatabase = {} # Stores all of the rows from the database table
+    newDictDatabase = {} # Stores all of the rows from the database table based on batches
+    tempDict = {} # Used to temporarily store all vertices for each batch
+    dictGraph = {} # Adjacency list that represents a graph's edges and respective weights
+    tempList = [] # Temporary list to store tuples that represent edges and weights (i.e. (vertex, weight))
+    INF = 999999
 
     if request.method == 'GET': 
         
@@ -375,8 +412,10 @@ def picks_for_OPUs():
         # fName = parameters['fName']
         # lName = parameters['lName']
         product = parameters['product']
-        barcode = parameters['barcode']
-        aisle = parameters['aisle']
+        barcode = (dictBarcodesAisles[product])[0]
+        aisle = (dictBarcodesAisles[product])[1]
+        # barcode = parameters['barcode']
+        # aisle = parameters['aisle']
         quantity = parameters['quantity']
         status = parameters['status']
         latitude = float(dictLatLong[product][0])
@@ -385,7 +424,7 @@ def picks_for_OPUs():
         totalQty += int(quantity)
 
         query = "INSERT into orderPickUps (batch, date, product, barcode, aisle, quantity, status, latitude, longitude) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        values = (batch, date, product, barcode, aisle, quantity, status, latitude, longitude)
+        values = (batch, date, product, int(barcode), int(aisle), quantity, status, latitude, longitude)
         databaseCursor.execute(query, values)
         myDB.commit()
         
@@ -402,6 +441,7 @@ def picks_for_SFS():
     global batch
     global totalQty
     global dictLatLong
+    global dictBarcodesAisles
 
     # Local variables
     dictDatabase = {} # Stores all of the rows from the database table
@@ -533,8 +573,10 @@ def picks_for_SFS():
         # fName = parameters['fName']
         # lName = parameters['lName']
         product = parameters['product']
-        barcode = parameters['barcode']
-        aisle = parameters['aisle']
+        barcode = (dictBarcodesAisles[product])[0]
+        aisle = (dictBarcodesAisles[product])[1]
+        # barcode = parameters['barcode']
+        # aisle = parameters['aisle']
         quantity = parameters['quantity']
         status = parameters['status']
         latitude = float(dictLatLong[product][0])
@@ -545,7 +587,7 @@ def picks_for_SFS():
         totalQty += int(quantity)
 
         query = "INSERT into shipFromStore (batch, date, product, barcode, aisle, quantity, status, latitude, longitude) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        values = (batch, date, product, barcode, aisle, quantity, status, latitude, longitude)
+        values = (batch, date, product, int(barcode), int(aisle), quantity, status, latitude, longitude)
         databaseCursor.execute(query, values)
         myDB.commit()
 

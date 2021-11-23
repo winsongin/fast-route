@@ -1,49 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="styling/styles.css" />
-    <title>FastRoute</title>
-  </head>
 
-  <body>
-    <section id="section-A">
-      <div class="container">
-        <div class="sidebar">
-          <ul>
-            <a href="#" id="logo-name">FastRoute</a>
-          </ul>
-          <hr />
-          <ul>
-            <a href="#" id="go-backs" class="nav-links">Go-Backs</a>
-          </ul>
-          <ul>
-            <a href="#" id="order-pick-ups" class="nav-links">Order Pick-Ups</a>
-          </ul>
-          <ul>
-            <a href="#" id="ship-from-store" class="nav-links"
-              >Ship From Store</a
-            >
-          </ul>
-          <ul>
-            <a href="#" id="replenishment" class="nav-links"
-              >Replenish Inventory</a
-            >
-          </ul>
-          <ul>
-            <a href="#" id="customer" class="nav-links">Customer</a>
-          </ul>
-          <button id="log-out">Log Out</button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <link rel="stylesheet" href="styling/styles.css" />
+  <title>FastRoute</title>
+</head>
+
+<body>
+  <section id="section-A">
+    <div class="container">
+      <div class="sidebar">
+        <ul>
+          <a href="#" id="logo-name">FastRoute</a>
+        </ul>
+        <hr />
+        <ul>
+          <a href="#" id="order-pick-ups" class="nav-links">Order Pick-Ups</a>
+        </ul>
+        <ul>
+          <a href="#" id="ship-from-store" class="nav-links">Ship From Store</a>
+        </ul>
+        <ul>
+          <a href="#" id="replenishment" class="nav-links">Replenish Inventory</a>
+        </ul>
+        <ul>
+          <a href="#" id="customer" class="nav-links">Customer</a>
+        </ul>
+        <button id="log-out">Log Out</button>
+      </div>
+
+      <div id="task-list">
+        <h4 class="task-list-header">Tasks List</h4>
+        <div class="tasks">
+          <button id="task-button">Tasks &darr;</button>
         </div>
-
-        <div id="task-list">
-          <h4 class="task-list-header">Tasks List</h4>
-          <div class="tasks">
-            <button id="task-button">Tasks &darr;</button>
-          </div>
-          <!-- <div class="batches">
+        <!-- <div class="batches">
             <label class="batch-label"
               ><input type="radio" name="batch-list" value="1" />Batch 1</label
             >
@@ -54,349 +48,310 @@
               ><input type="radio" name="batch-list" value="2" />Batch 2</label
             >
           </div> -->
-          <div id="select-batch-btn">
-            <button>Start</button>
-          </div>
-        </div>
-
-        <div id="workspace">
-          <div class="image-display">Display image here</div>
-          <div class="item-info">
-            <ul>
-              <label for="customer-name" id="customer-name"
-                >Customer Name: <input type="text" class="info" readonly
-              /></label>
-            </ul>
-            <ul>
-              <label for="order-number" id="order-number"
-                >Order #: <input type="text" class="info" readonly
-              /></label>
-            </ul>
-            <ul>
-              <label for="date"
-                >Date: <input type="text" class="info" readonly
-              /></label>
-            </ul>
-            <ul>
-              <label for="product"
-                >Product: <input type="text" class="info" readonly
-              /></label>
-            </ul>
-            <ul>
-              <label for="barcode"
-                >Barcode: <input type="text" class="info" readonly
-              /></label>
-            </ul>
-            <ul>
-              <label for="location"
-                >Location: <input type="text" class="info" readonly />
-              </label>
-            </ul>
-            <ul>
-              <label for="aisle"
-                >Aisle: <input type="text" class="info" readonly
-              /></label>
-            </ul>
-          </div>
-          <div class="buttons">
-            <button id="skip">Skip</button>
-            <button id="scan-location">Scan Location</button>
-          </div>
-        </div>
-
-        <div id="replenish-inventory" class="toggle">
-          <button id="replenish-btn">Replenish Inventory</button>
+        <div id="select-batch-btn">
+          <button>Start</button>
         </div>
       </div>
-    </section>
 
-    <section id="section-B" class="toggle">
-      <div id="top-of-page">
-        <button id="back-btn">&larr; Back to Employee View</button>
-      </div>
-      <div id="customer-view">
-        <div class="products">
-          <img src="images/coca-cola-6pk.jpg" alt="Coca Cola 6pk" />
-          <label for="Coca-Cola (6 pack)" class="product-name"
-            >Coca-Cola (6 pack)</label
-          >
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
+      <div id="workspace">
+        <div class="image-display">Display image here</div>
+        <div class="item-info">
+          <ul>
+            <label for="batch-num" id="batch-num">Batch #: <input type="text" class="info" readonly /></label>
+          </ul>
+          <ul>
+            <label for="date">Date: <input type="text" class="info" readonly /></label>
+          </ul>
+          <ul>
+            <label for="product">Product: <input type="text" class="info" readonly /></label>
+          </ul>
+          <ul>
+            <label for="barcode">Barcode: <input type="text" class="info" readonly /></label>
+          </ul>
+          <ul>
+            <label for="aisle">Aisle: <input type="text" class="info" readonly /></label>
+          </ul>
+          <ul>
+            <label for="quantity">Quantity: <input type="text" class="info" readonly /></label>
+          </ul>
+          <ul>
+            <label for="location">Location: <input type="text" class="info" readonly />
+            </label>
+          </ul>
         </div>
-        <div class="products">
-          <img src="images/coca-cola-12pk.jpg" alt="Coca Cola 12pk" />
-          <label for="coca-cola-12pk" class="product-name"
-            >Coca-Cola (12 pack)</label
-          >
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/de-razor.jpg" alt="safety razor" />
-          <label for="de-razor" class="product-name"
-            >Double Edge Safety Razor</label
-          >
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/electric-shaver.jpg" alt="electric shaver" />
-          <label for="electric-shaver" class="product-name"
-            >Electric Shaver</label
-          >
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/805.jpg" alt="805 beer" />
-          <label for="805 beer" class="product-name"
-            >Firestone Walker 805</label
-          >
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/elysian-space-dust-ipa.jpg" alt="elysian beer" />
-          <label for="Elysian beer" class="product-name"
-            >Elysian Space Dust IPA</label
-          >
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img
-            src="images/sierra-nevada-hazy-ipa.jpg"
-            alt="sierra nevada beer"
-          />
-          <label for="Sierra Nevada Hazy IPA" class="product-name"
-            >Sierra Nevada Hazy IPA</label
-          >
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/sour-patch.jpg" alt="sour patch candy" />
-          <label for="Sour Patch" class="product-name">Sour Patch Kids</label>
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/tea-tree-shampoo.jpg" alt="tea tree shampoo" />
-          <label for="Tea Tree Shampoo" class="product-name"
-            >Tea Tree Shampoo</label
-          >
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/tennis-ball.jpeg" alt="tennis balls" />
-          <label for="tennis ball" class="product-name"
-            >Tennis Ball - 1 Can (3 Balls)</label
-          >
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/tylenol.jpg" alt="tylenol" />
-          <label for="tylenol" class="product-name">Tylenol</label>
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/advil.png" alt="advil" />
-          <label for="advil" class="product-name">Advil</label>
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/dyson-blow-dryer.jpg" alt="hair dryer" />
-          <label for="Dyson hair dryer" class="product-name"
-            >Dyson Hair Dryer</label
-          >
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/dog-food.jpg" alt="dog food" />
-          <label for="dog food" class="product-name">Dog Food</label>
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/crest-3d-white.jpeg" alt="crest toothpaste" />
-          <label for="Crest toothpaste" class="product-name"
-            >Crest 3D White Toothpaste</label
-          >
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/basketball.jpg" alt="basketball" />
-          <label for="basketball" class="product-name">Basketball</label>
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/monopoly.jpg" alt="monopoly" />
-          <label for="Monopoly" class="product-name">Monopoly Board Game</label>
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
-        </div>
-        <div class="products">
-          <img src="images/tide-detergent.jpeg" alt="tide detergent" />
-          <label for="tide-detergent" class="product-name"
-            >Tide Detergent</label
-          >
-          <label for="in-stock" class="product-info">In stock: </label>
-          <div class="quantity">
-            <button class="decrement-btns">-</button>
-            <input class="qty-input" type="text" value="1" readonly />
-            <button class="increment-btns">+</button>
-          </div>
-          <div class="purchase-btns">
-            <button class="pick-it-up purchase-option-btn">Pick It Up</button>
-            <button class="ship-it purchase-option-btn">Ship It</button>
-          </div>
+        <div class="buttons">
+          <button id="skip">Skip</button>
+          <button id="scan-location">Scan Location</button>
         </div>
       </div>
-    </section>
 
-    <script src="scripts/index.js"></script>
-  </body>
+      <div id="replenish-inventory" class="toggle">
+        <button id="replenish-btn">Replenish Inventory</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="section-B" class="toggle">
+    <div id="top-of-page">
+      <button id="back-btn">&larr; Back to Employee View</button>
+    </div>
+    <div id="customer-view">
+      <div class="products">
+        <img src="images/coca-cola-6pk.jpg" alt="Coca Cola 6pk" />
+        <label for="Coca-Cola (6 pack)" class="product-name">Coca-Cola (6 pack)</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/coca-cola-12pk.jpg" alt="Coca Cola 12pk" />
+        <label for="coca-cola-12pk" class="product-name">Coca-Cola (12 pack)</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/de-razor.jpg" alt="safety razor" />
+        <label for="de-razor" class="product-name">Double Edge Safety Razor</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/electric-shaver.jpg" alt="electric shaver" />
+        <label for="electric-shaver" class="product-name">Electric Shaver</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/805.jpg" alt="805 beer" />
+        <label for="805 beer" class="product-name">Firestone Walker 805</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/elysian-space-dust-ipa.jpg" alt="elysian beer" />
+        <label for="Elysian beer" class="product-name">Elysian Space Dust IPA</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/sierra-nevada-hazy-ipa.jpg" alt="sierra nevada beer" />
+        <label for="Sierra Nevada Hazy IPA" class="product-name">Sierra Nevada Hazy IPA</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/sour-patch.jpg" alt="sour patch candy" />
+        <label for="Sour Patch" class="product-name">Sour Patch Kids</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/tea-tree-shampoo.jpg" alt="tea tree shampoo" />
+        <label for="Tea Tree Shampoo" class="product-name">Tea Tree Shampoo</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/tennis-ball.jpeg" alt="tennis balls" />
+        <label for="tennis ball" class="product-name">Tennis Ball - 1 Can (3 Balls)</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/tylenol.jpg" alt="tylenol" />
+        <label for="tylenol" class="product-name">Tylenol</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/advil.png" alt="advil" />
+        <label for="advil" class="product-name">Advil</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/dyson-blow-dryer.jpg" alt="hair dryer" />
+        <label for="Dyson hair dryer" class="product-name">Dyson Hair Dryer</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/dog-food.jpg" alt="dog food" />
+        <label for="dog food" class="product-name">Dog Food</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/crest-3d-white.jpeg" alt="crest toothpaste" />
+        <label for="Crest toothpaste" class="product-name">Crest 3D White Toothpaste</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/basketball.jpg" alt="basketball" />
+        <label for="basketball" class="product-name">Basketball</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/monopoly.jpg" alt="monopoly" />
+        <label for="Monopoly" class="product-name">Monopoly Board Game</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+      <div class="products">
+        <img src="images/tide-detergent.jpeg" alt="tide detergent" />
+        <label for="tide-detergent" class="product-name">Tide Detergent</label>
+        <label for="in-stock" class="product-info">In stock: </label>
+        <div class="quantity">
+          <button class="decrement-btns">-</button>
+          <input class="qty-input" type="text" value="1" readonly />
+          <button class="increment-btns">+</button>
+        </div>
+        <div class="purchase-btns">
+          <button class="pick-it-up purchase-option-btn">Pick It Up</button>
+          <button class="ship-it purchase-option-btn">Ship It</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="scripts/index.js"></script>
+</body>
+
 </html>

@@ -67,8 +67,6 @@ async function updateInventory(productNames, arraySize, requestMethod) {
       // Create JSON data for each iteration of requests
       date: todayDate,
       product: product,
-      barcode: i,
-      aisle: 10 + i,
       quantity: 5,
     };
 
@@ -198,8 +196,6 @@ async function updateFulfillment(list) {
         let productInfo = {
           date: todayDate,
           product: product,
-          barcode: 0,
-          aisle: 5,
           quantity: quantity,
           status: "Not Started",
         };
