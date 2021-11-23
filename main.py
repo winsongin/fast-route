@@ -228,8 +228,6 @@ def backstock_product():
             product = parameters['product'] 
             barcode = (dictBarcodesAisles[product])[0]
             aisle = (dictBarcodesAisles[product])[1]
-            # barcode = parameters['barcode']
-            # aisle = parameters['aisle']
             quantity = parameters['quantity']
             
             # Get the current quantity in the backstock inventory so that new quantity can be added to it
@@ -256,11 +254,7 @@ def backstock_product():
             date = parameters['date']
             product = parameters['product'] 
             barcode = (dictBarcodesAisles[product])[0]
-            # print("Barcode: {}".format(barcode))
             aisle = (dictBarcodesAisles[product])[1]
-            # print("Aisle: {}".format(aisle))
-            # barcode = parameters['barcode']
-            # aisle = parameters['aisle']
             quantity = parameters['quantity']
 
             query = "INSERT INTO backstock (date, product, barcode, aisle, quantity) VALUES (%s, %s, %s, %s, %s)"
@@ -414,8 +408,6 @@ def picks_for_OPUs():
         product = parameters['product']
         barcode = (dictBarcodesAisles[product])[0]
         aisle = (dictBarcodesAisles[product])[1]
-        # barcode = parameters['barcode']
-        # aisle = parameters['aisle']
         quantity = parameters['quantity']
         status = parameters['status']
         latitude = float(dictLatLong[product][0])
@@ -427,7 +419,17 @@ def picks_for_OPUs():
         values = (batch, date, product, int(barcode), int(aisle), quantity, status, latitude, longitude)
         databaseCursor.execute(query, values)
         myDB.commit()
-        
+
+        query = "SELECT quantity FROM backstock WHERE product = %s and barcode = %s" 
+        values = (product, barcode)
+        databaseCursor.execute(query, values) 
+        previousQuantity = databaseCursor.fetchone()
+
+        newQuantity = previousQuantity[0] - int(quantity)
+        query = "UPDATE backstock SET quantity = %s WHERE product = %s and barcode = %s"
+        values = (newQuantity, product, barcode)
+        databaseCursor.execute(query, values)
+        myDB.commit()
 
         message = {'date': date, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity, 'status': status, 'latitude': latitude, 'longitude': longitude}
         return jsonify(message), 201
@@ -575,8 +577,6 @@ def picks_for_SFS():
         product = parameters['product']
         barcode = (dictBarcodesAisles[product])[0]
         aisle = (dictBarcodesAisles[product])[1]
-        # barcode = parameters['barcode']
-        # aisle = parameters['aisle']
         quantity = parameters['quantity']
         status = parameters['status']
         latitude = float(dictLatLong[product][0])
@@ -588,6 +588,17 @@ def picks_for_SFS():
 
         query = "INSERT into shipFromStore (batch, date, product, barcode, aisle, quantity, status, latitude, longitude) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         values = (batch, date, product, int(barcode), int(aisle), quantity, status, latitude, longitude)
+        databaseCursor.execute(query, values)
+        myDB.commit()
+
+        query = "SELECT quantity FROM backstock WHERE product = %s and barcode = %s" 
+        values = (product, barcode)
+        databaseCursor.execute(query, values) 
+        previousQuantity = databaseCursor.fetchone()
+
+        newQuantity = previousQuantity[0] - int(quantity)
+        query = "UPDATE backstock SET quantity = %s WHERE product = %s and barcode = %s"
+        values = (newQuantity, product, barcode)
         databaseCursor.execute(query, values)
         myDB.commit()
 
