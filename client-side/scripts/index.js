@@ -1,7 +1,7 @@
 "use strict";
 
-let customer = document.getElementById("customer-name");
-let orderNumber = document.getElementById("order-number");
+// let customer = document.getElementById("customer-name");
+// let orderNumber = document.getElementById("order-number");
 let scanItemButton = document.getElementById("scan-location");
 let workspace = document.getElementById("workspace");
 let replenishInventory = document.getElementById("replenish-inventory");
@@ -20,9 +20,10 @@ orderPickUps.addEventListener("click", function () {
   }
   scanItemButton.appendChild(document.createTextNode("Scan Product"));
 
-  // Toggle on Customer Name and Order Number
-  customer.classList.remove("toggle");
-  orderNumber.classList.remove("toggle");
+  // // Toggle on Customer Name and Order Number
+  // customer.classList.remove("toggle");
+  // orderNumber.classList.remove("toggle");
+  decideFulfillmentType("OPU");
 });
 
 let shipFromStore = document.getElementById("ship-from-store");
@@ -40,9 +41,10 @@ shipFromStore.addEventListener("click", function () {
   }
   scanItemButton.appendChild(document.createTextNode("Scan Product"));
 
-  // Toggle on Customer Name and Order Number
-  customer.classList.remove("toggle");
-  orderNumber.classList.remove("toggle");
+  // // Toggle on Customer Name and Order Number
+  // customer.classList.remove("toggle");
+  // orderNumber.classList.remove("toggle");
+  decideFulfillmentType("SFS");
 });
 
 // async/await used to ensure that fetch() calls are in order
@@ -278,21 +280,48 @@ backBtn.addEventListener("click", function () {
   }
 });
 
+var opu;
+var sfs;
+function decideFulfillmentType(fulfillmentType) {
+  if (fulfillmentType == "OPU") {
+    opu = true;
+    sfs = false;
+    console.log("OPU is selected");
+  } else if (fulfillmentType == "SFS") {
+    opu = false;
+    sfs = true;
+    console.log("SFS is selected");
+  }
+}
+
 let taskBtn = document.getElementById("task-button");
 var taskList = document.getElementById("task-list");
-let batchCount = -1;
+let batchList = document.getElementById("batch-list");
+let batchCount;
 let batchLength;
 var savedResult;
+var fulfill;
 taskBtn.addEventListener("click", function () {
-  fetch("http://localhost:5000/api/v1.0/fulfillment/SFS")
+  if (opu == true) {
+    fulfill = "OPU";
+    console.log("OPU is true");
+  } else if ((sfs = true)) {
+    fulfill = "SFS";
+    console.log("SFS is true");
+  }
+  batchLength = 0;
+  batchCount = -1;
+  fetch(`http://localhost:5000/api/v1.0/fulfillment/${fulfill}`)
     .then((res) => res.json())
     .then((res) => {
+      removeBatch(batchList);
       savedResult = res; // save the result so that it can later be used to display to the workspace
       for (const key in res) {
         batchLength = 0; // reset batchLength to count the number of products in each batch
         console.log("This is batch: " + key);
         for (const value in res) {
           if (res[key].hasOwnProperty(value)) {
+            console.log("batchQtyLabel text ADDEEEDDDDDDDDDDDDDDDDDDDD");
             // console.log("(res[key])[value]: " + (res[key])[value]);
             if (res[key][value][0] > batchCount) {
               batchCount++;
@@ -312,8 +341,9 @@ taskBtn.addEventListener("click", function () {
               batchLabel.appendChild(batchNumText);
               newBatch.appendChild(batchLabel);
               newBatch.appendChild(batchQtyLabel);
+              batchList.appendChild(newBatch);
               let startBtn = document.getElementById("select-batch-btn");
-              startBtn.parentNode.insertBefore(newBatch, startBtn);
+              startBtn.parentNode.insertBefore(batchList, startBtn);
             }
             if (res[key][value][0] == batchCount) {
               batchLength++;
@@ -386,7 +416,7 @@ function fulfillProduct(batchNum, productName, barcode, aisle, quantity) {
   };
 
   // DELETE the product if "Scan Location" button is clicked for that product
-  fetch("http://localhost:5000/api/v1.0/fulfillment/SFS", options)
+  fetch(`http://localhost:5000/api/v1.0/fulfillment/${fulfill}`, options)
     .then((res) => res.json())
     .then((res) => console.log(res));
 }

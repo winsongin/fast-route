@@ -333,6 +333,7 @@ def picks_for_OPUs():
             vertex = 0 # starting vertex
             minSpanTree = {} 
             edgeCount = 0
+            minVertex = 0
 
             while(edgeCount < len(visitedVertices)): 
 
@@ -391,7 +392,7 @@ def picks_for_OPUs():
         #     for j in range(len(fastestRouteBatches[i])): 
         #         print("\t{}: {}".format(j, (fastestRouteBatches[i])[j]))
 
-        return jsonify(fastestRouteDict), 200
+        return jsonify(fastestRouteBatches), 200
 
     elif request.method == 'POST':
 
@@ -444,7 +445,7 @@ def picks_for_OPUs():
         aisle = parameters['aisle']
         quantity = parameters['quantity']
 
-        query = "DELETE FROM shipFromStore WHERE batch = %s and product = %s and barcode = %s and aisle = %s and quantity = %s"
+        query = "DELETE FROM orderPickUps WHERE batch = %s and product = %s and barcode = %s and aisle = %s and quantity = %s"
         values = (batch, product, barcode, aisle, quantity)
         databaseCursor.execute(query, values) 
         myDB.commit()
@@ -520,6 +521,7 @@ def picks_for_SFS():
             vertex = 0 # starting vertex
             minSpanTree = {} 
             edgeCount = 0
+            minVertex = 0
 
             while(edgeCount < len(visitedVertices)): 
 
