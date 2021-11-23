@@ -301,7 +301,6 @@ taskBtn.addEventListener("click", function () {
               let batchLabel = document.createElement("label");
               let batchInput = document.createElement("input");
               var batchQtyLabel = document.createElement("label");
-              var batchDiv = document.createElement("div");
               newBatch.setAttribute("class", "batches");
               batchLabel.setAttribute("class", "batch-label");
               batchInput.setAttribute("type", "radio");
@@ -309,15 +308,12 @@ taskBtn.addEventListener("click", function () {
               batchInput.setAttribute("value", batchCount);
               batchQtyLabel.setAttribute("class", "batch-qty");
               let batchNumText = document.createTextNode("Batch " + batchCount);
-              // console.log("This is batchNumText: " + batchNumText.textContent);
               batchLabel.appendChild(batchInput);
               batchLabel.appendChild(batchNumText);
               newBatch.appendChild(batchLabel);
               newBatch.appendChild(batchQtyLabel);
-              batchDiv.appendChild(newBatch);
               let startBtn = document.getElementById("select-batch-btn");
-              startBtn.parentNode.insertBefore(batchDiv, startBtn);
-              // taskList.appendChild(newBatch);
+              startBtn.parentNode.insertBefore(newBatch, startBtn);
             }
             if (res[key][value][0] == batchCount) {
               batchLength++;
@@ -356,6 +352,21 @@ taskBtn.addEventListener("click", function () {
   //   }
   // }
 });
+
+var batches = document.getElementsByClassName("batches");
+// Remove batch label after batch has been completed
+function removeBatch(parent) {
+  parent.querySelectorAll("*").forEach((n) => n.remove());
+  parent.remove();
+}
+
+// Reeset all radio buttons and "Scan Location" button so t can be used to select and work on the next batch
+function resetButtons(radioBtns, scanLocationBtn) {
+  for (let i = 0; i < radioBtns.length; i++) {
+    radioBtns[i].disabled = false;
+  }
+  scanLocationBtn.disabled = false;
+}
 
 let selectBatchBtn = document.getElementById("select-batch-btn");
 let batchLabel = document.getElementsByClassName("batch-label");
@@ -406,6 +417,8 @@ selectBatchBtn.addEventListener("click", function () {
           }
           scanLocationBtn.disabled = true;
           console.log("LAST PRODUCT IN BATCH");
+          removeBatch(batches[i]);
+          resetButtons(radios, scanLocationBtn);
         }
         order = order + 1;
         for (let v = 0; v < savedResult[i][order].length - 2; v++) {
