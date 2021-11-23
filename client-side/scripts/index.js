@@ -368,6 +368,29 @@ function resetButtons(radioBtns, scanLocationBtn) {
   scanLocationBtn.disabled = false;
 }
 
+function fulfillProduct(batchNum, productName, barcode, aisle, quantity) {
+  let deleteProduct = {
+    batch: batchNum,
+    product: productName,
+    barcode: barcode,
+    aisle: aisle,
+    quantity: quantity,
+  };
+
+  let options = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+    },
+    body: JSON.stringify(deleteProduct),
+  };
+
+  // DELETE the product if "Scan Location" button is clicked for that product
+  fetch("http://localhost:5000/api/v1.0/fulfillment/SFS", options)
+    .then((res) => res.json())
+    .then((res) => console.log(res));
+}
+
 let selectBatchBtn = document.getElementById("select-batch-btn");
 let batchLabel = document.getElementsByClassName("batch-label");
 let radios = document.getElementsByName("batch-list");
@@ -407,6 +430,13 @@ selectBatchBtn.addEventListener("click", function () {
       }
 
       scanLocationBtn.addEventListener("click", function () {
+        let batchNum = savedResult[i][order][0];
+        let productName = savedResult[i][order][2];
+        let barcode = savedResult[i][order][3];
+        let aisle = savedResult[i][order][4];
+        let quantity = savedResult[i][order][5];
+        fulfillProduct(batchNum, productName, barcode, aisle, quantity);
+        // If the last item has already been scanned, remove the batch from the task list
         if (order == Object.keys(savedResult[i]).length - 1) {
           for (let v = 0; v < savedResult[i][order].length - 2; v++) {
             try {
@@ -417,8 +447,8 @@ selectBatchBtn.addEventListener("click", function () {
           }
           scanLocationBtn.disabled = true;
           console.log("LAST PRODUCT IN BATCH");
-          removeBatch(batches[i]);
-          resetButtons(radios, scanLocationBtn);
+          removeBatch(batches[i]); // Remove batch labels
+          resetButtons(radios, scanLocationBtn); // Reset radio and "Scan Location" buttons
         }
         order = order + 1;
         for (let v = 0; v < savedResult[i][order].length - 2; v++) {

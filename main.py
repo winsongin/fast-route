@@ -267,7 +267,7 @@ def backstock_product():
             return jsonify(message), 200
 
 # OPUs - Order Pick-Ups list when customers order online
-@app.route('/api/v1.0/fulfillment/OPU', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/api/v1.0/fulfillment/OPU', methods=['GET', 'POST', 'OPTIONS', 'DELETE'])
 @cross_origin()
 def picks_for_OPUs():
 
@@ -434,8 +434,27 @@ def picks_for_OPUs():
         message = {'date': date, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity, 'status': status, 'latitude': latitude, 'longitude': longitude}
         return jsonify(message), 201
 
+    elif request.method == 'DELETE':
+
+        parameters = request.get_json(force=True)
+
+        batch = parameters['batch']
+        product = parameters['product']
+        barcode = parameters['barcode']
+        aisle = parameters['aisle']
+        quantity = parameters['quantity']
+
+        query = "DELETE FROM shipFromStore WHERE batch = %s and product = %s and barcode = %s and aisle = %s and quantity = %s"
+        values = (batch, product, barcode, aisle, quantity)
+        databaseCursor.execute(query, values) 
+        myDB.commit()
+
+        productInfo = {'batch': batch, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
+        message = {'deleted': productInfo}
+        return jsonify(message), 200
+
 # Pick items for SFS (Ship From Store) batches
-@app.route('/api/v1.0/fulfillment/SFS', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/api/v1.0/fulfillment/SFS', methods=['GET', 'POST', 'OPTIONS', 'DELETE'])
 @cross_origin()
 def picks_for_SFS():
 
@@ -604,6 +623,25 @@ def picks_for_SFS():
 
         message = {'date': date, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity, 'status': status, 'latitude': latitude, 'longitude': longitude}
         return jsonify(message), 201
+
+    elif request.method == 'DELETE':
+
+        parameters = request.get_json(force=True)
+
+        batch = parameters['batch']
+        product = parameters['product']
+        barcode = parameters['barcode']
+        aisle = parameters['aisle']
+        quantity = parameters['quantity']
+
+        query = "DELETE FROM shipFromStore WHERE batch = %s and product = %s and barcode = %s and aisle = %s and quantity = %s"
+        values = (batch, product, barcode, aisle, quantity)
+        databaseCursor.execute(query, values) 
+        myDB.commit()
+
+        productInfo = {'batch': batch, 'product': product, 'barcode': barcode, 'aisle': aisle, 'quantity': quantity}
+        message = {'deleted': productInfo}
+        return jsonify(message), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
