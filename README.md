@@ -28,8 +28,8 @@
   - These are to be in the same directory as main.py and wsgi.py
   - .env
     - Enter the following:
-    - FLASK_APP=main.py
-    - FLASK_ENV=development
+      - FLASK_APP=main.py
+      - FLASK_ENV=development
   - database.ini
     - Contents in the format below:
       - **Note:** Enter the following information that corresponds to your MySQL configuration
